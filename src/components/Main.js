@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Switch, Route, Redirect } from "react-router-dom";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -7,9 +8,11 @@ import {
 } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Hidden from "@material-ui/core/Hidden";
-import Navigator from "./Navigator";
-import Content from "./Content";
 import Header from "./Header";
+import Navigator from "./Navigator";
+import Content2 from "./Content2";
+import Content from "./Content";
+import routes from "../routes/routes";
 
 let theme = createMuiTheme({
   typography: {
@@ -152,17 +155,47 @@ const styles = {
   }
 };
 
+const switchRoutes = (
+  <Switch>
+    {routes.map((prop, key) => {
+      if (prop.redirect)
+        return <Redirect from={prop.path} to={prop.to} key={key} />;
+      return <Route path={prop.path} component={prop.component} key={key} />;
+    })}
+  </Switch>
+);
+
 class Main extends React.Component {
-  state = {
-    mobileOpen: false
-  };
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      mobileOpen: false
+    };
+    this.resizeFunction = this.resizeFunction.bind(this);
+  }
   handleDrawerToggle = () => {
-    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+    this.setState({ mobileOpen: !this.state.mobileOpen });
   };
-
+  resizeFunction() {
+    if (window.innerWidth >= 960) {
+      this.setState({ mobileOpen: false });
+    }
+  }
+  componentDidMount() {
+    window.addEventListener("resize", this.resizeFunction);
+  }
+  componentDidUpdate(e) {
+    if (e.history.location.pathname !== e.location.pathname) {
+      if (this.state.mobileOpen) {
+        this.setState({ mobileOpen: false });
+      }
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resizeFunction);
+  }
   render() {
-    const { classes } = this.props;
+    const { classes, ...rest } = this.props;
 
     return (
       <MuiThemeProvider theme={theme}>
@@ -171,21 +204,25 @@ class Main extends React.Component {
           <nav className={classes.drawer}>
             <Hidden smUp implementation="js">
               <Navigator
+                routes={routes}
                 PaperProps={{ style: { width: drawerWidth } }}
                 variant="temporary"
                 open={this.state.mobileOpen}
                 onClose={this.handleDrawerToggle}
+                {...rest}
               />
             </Hidden>
             <Hidden xsDown implementation="css">
-              <Navigator PaperProps={{ style: { width: drawerWidth } }} />
+              <Navigator
+                routes={routes}
+                PaperProps={{ style: { width: drawerWidth } }}
+                {...rest}
+              />
             </Hidden>
           </nav>
           <div className={classes.appContent}>
             <Header onDrawerToggle={this.handleDrawerToggle} />
-            <main className={classes.mainContent}>
-              <Content />
-            </main>
+            <main className={classes.mainContent}>{switchRoutes}</main>
           </div>
         </div>
       </MuiThemeProvider>

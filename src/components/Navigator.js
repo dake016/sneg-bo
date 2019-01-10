@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { NavLink } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
@@ -50,6 +51,7 @@ const styles = theme => ({
     color: theme.palette.common.white
   },
   item: {
+    textDecoration: "none",
     paddingTop: 4,
     paddingBottom: 4,
     color: "rgba(255, 255, 255, 0.7)"
@@ -86,9 +88,46 @@ const styles = theme => ({
   }
 });
 
-function Navigator(props) {
-  const { classes, ...other } = props;
-
+const Navigator = ({ ...props }) => {
+  const { classes, routes, ...other } = props;
+  function activeRoute(routeName) {
+    return props.location.pathname.indexOf(routeName) > -1 ? true : false;
+  }
+  var links = (
+    <List className={classes.list}>
+      {routes.map((prop, key) => {
+        if (prop.redirect) return null;
+        return (
+          <NavLink to={prop.path}>
+            <ListItem
+              button
+              dense
+              className={classNames(
+                classes.item,
+                classes.itemActionable,
+                activeRoute(prop.path) && classes.itemActiveItem
+              )}
+            >
+              <ListItemIcon>
+                {typeof prop.icon === "string" ? (
+                  <Icon>{prop.icon}</Icon>
+                ) : (
+                  <prop.icon />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary={prop.sidebarName}
+                classes={{
+                  primary: classes.itemPrimary,
+                  textDense: classes.textDense
+                }}
+              />
+            </ListItem>
+          </NavLink>
+        );
+      })}
+    </List>
+  );
   return (
     <Drawer variant="permanent" {...other}>
       <List disablePadding>
@@ -99,20 +138,18 @@ function Navigator(props) {
             classes.itemCategory
           )}
         >
-          Paperbase
+          Sneg Back Office
         </ListItem>
-        <ListItem className={classNames(classes.item, classes.itemCategory)}>
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
+        <ListItem className={classes.categoryHeader}>
           <ListItemText
             classes={{
-              primary: classes.itemPrimary
+              primary: classes.categoryHeaderPrimary
             }}
           >
-            Project Overview
+            Main
           </ListItemText>
         </ListItem>
+        <React.Fragment>{links}</React.Fragment>
         {categories.map(({ id, children }) => (
           <React.Fragment key={id}>
             <ListItem className={classes.categoryHeader}>
@@ -152,7 +189,7 @@ function Navigator(props) {
       </List>
     </Drawer>
   );
-}
+};
 
 Navigator.propTypes = {
   classes: PropTypes.object.isRequired

@@ -11,7 +11,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Header from "./Header";
 import Navigator from "./Navigator";
 import Content2 from "./Content2";
-import Content from "./Content";
+import Content from "./OrderList";
 import routes from "../routes/routes";
 
 let theme = createMuiTheme({
@@ -147,11 +147,6 @@ const styles = {
     flex: 1,
     display: "flex",
     flexDirection: "column"
-  },
-  mainContent: {
-    flex: 1,
-    padding: "48px 36px 0",
-    background: "#eaeff1"
   }
 };
 
@@ -221,8 +216,12 @@ class Main extends React.Component {
             </Hidden>
           </nav>
           <div className={classes.appContent}>
-            <Header onDrawerToggle={this.handleDrawerToggle} />
-            <main className={classes.mainContent}>{switchRoutes}</main>
+            <Header
+              routes={routes}
+              onDrawerToggle={this.handleDrawerToggle}
+              {...rest}
+            />
+            {switchRoutes}
           </div>
         </div>
       </MuiThemeProvider>

@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { hot } from "react-hot-loader";
-import { Router, Route, Redirect, Link, Switch } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import Main from "./components/Main";
 import Signin from "./components/Signin";
 
-import "./Reset.css";
 import "./App.css";
 
 // Authentication commented
@@ -48,12 +47,12 @@ class App extends Component {
     return (
       <Router history={hist}>
         <Switch>
-          <Route exact path="/signin" component={Signin} />
-          <Route exact path="/" component={Main} />
+          <Route path="/signin" component={Signin} />
+          <Route path="/" component={Main} />
         </Switch>
       </Router>
     );
   }
 }
 
-export default hot(module)(App);
+export default App;

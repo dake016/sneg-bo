@@ -10,9 +10,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Hidden from "@material-ui/core/Hidden";
 import Header from "./Header";
 import Navigator from "./Navigator";
-import Content2 from "./Content2";
-import Content from "./OrderList";
 import routes from "../routes/routes";
+import AuthService from "./AuthService";
+import withAuth from "./withAuth";
+
+const Auth = new AuthService();
 
 let theme = createMuiTheme({
   typography: {
@@ -191,7 +193,6 @@ class Main extends React.Component {
   }
   render() {
     const { classes, ...rest } = this.props;
-
     return (
       <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
@@ -233,4 +234,4 @@ Main.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Main);
+export default withAuth(withStyles(styles)(Main));

@@ -19,6 +19,10 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import AuthService from "./AuthService";
+import withAuth from "./withAuth";
+
+const Auth = new AuthService();
 
 function TabContainer(props) {
   return (
@@ -67,9 +71,11 @@ class OrderList extends React.Component {
   state = {
     activeTab: 0
   };
+
   handleChange = (event, value) => {
     this.setState({ activeTab: value });
   };
+
   render() {
     const { classes } = this.props;
     const { activeTab } = this.state;
@@ -121,6 +127,8 @@ class OrderList extends React.Component {
       </Paper>
     );
     let id = 0;
+
+    // Sample data
     function createData(name, calories, fat, carbs, protein) {
       id += 1;
       return { id, name, calories, fat, carbs, protein };
@@ -257,4 +265,4 @@ OrderList.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(OrderList);
+export default withAuth(withStyles(styles)(OrderList));

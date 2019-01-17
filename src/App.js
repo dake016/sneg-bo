@@ -3,7 +3,7 @@ import { hot } from "react-hot-loader";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import Main from "./components/Main";
-import Login from "./components/Login";
+import Login from "./components/auth/Login";
 
 import "./App.css";
 
@@ -47,7 +47,7 @@ class App extends Component {
     return (
       <Router history={hist}>
         <Switch>
-          <Route path="/login" component={Login} />
+          <Route exact path="/login" component={Login} />
           <Route path="/" component={Main} />
         </Switch>
       </Router>

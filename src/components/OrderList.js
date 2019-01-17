@@ -12,6 +12,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import TableChart from "@material-ui/icons/TableChart";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import Table from "@material-ui/core/Table";
@@ -19,10 +20,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import AuthService from "./AuthService";
-import withAuth from "./withAuth";
-
-const Auth = new AuthService();
+import AuthService from "./auth/AuthService";
+import withAuth from "./auth/withAuth";
 
 function TabContainer(props) {
   return (
@@ -41,7 +40,6 @@ const styles = theme => ({
     zIndex: 0
   },
   paper: {
-    maxWidth: 936,
     margin: "auto",
     overflow: "hidden"
   },
@@ -69,16 +67,27 @@ const styles = theme => ({
 
 class OrderList extends React.Component {
   state = {
-    activeTab: 0
+    activeTab: 0,
+    fetchedData: []
   };
+
+  Auth = new AuthService();
 
   handleChange = (event, value) => {
     this.setState({ activeTab: value });
   };
 
+  componentWillMount() {
+    this.Auth.fetch(`${this.Auth.domain}/orders`, { method: "GET" })
+      .then(response => this.setState({ fetchedData: response }))
+      .catch(error => alert("Orders " + error));
+  }
+
   render() {
     const { classes } = this.props;
     const { activeTab } = this.state;
+    const { fetchedData } = this.state.fetchedData;
+
     const tab1 = (
       <Paper className={classes.paper}>
         <AppBar
@@ -90,88 +99,12 @@ class OrderList extends React.Component {
           <Toolbar>
             <Grid container spacing={16} alignItems="center">
               <Grid item>
-                <SearchIcon className={classes.block} color="inherit" />
+                <TableChart className={classes.block} color="inherit" />
               </Grid>
               <Grid item xs>
-                <TextField
-                  fullWidth
-                  placeholder="Search by email address, phone number, or user UID"
-                  InputProps={{
-                    disableUnderline: true,
-                    className: classes.searchInput
-                  }}
-                />
+                <Typography>Completed Orders</Typography>
               </Grid>
               <Grid item>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.addUser}
-                >
-                  Add user
-                </Button>
-                <Tooltip title="Reload">
-                  <IconButton>
-                    <RefreshIcon className={classes.block} color="inherit" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Toolbar>
-        </AppBar>
-        <div className={classes.contentWrapper}>
-          <Typography color="textSecondary" align="center">
-            No users for this project yet
-          </Typography>
-        </div>
-      </Paper>
-    );
-    let id = 0;
-
-    // Sample data
-    function createData(name, calories, fat, carbs, protein) {
-      id += 1;
-      return { id, name, calories, fat, carbs, protein };
-    }
-
-    const rows = [
-      createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-      createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-      createData("Eclair", 262, 16.0, 24, 6.0),
-      createData("Cupcake", 305, 3.7, 67, 4.3),
-      createData("Gingerbread", 356, 16.0, 49, 3.9)
-    ];
-    const tab2 = (
-      <Paper className={classes.paper}>
-        <AppBar
-          className={classes.searchBar}
-          position="static"
-          color="default"
-          elevation={0}
-        >
-          <Toolbar>
-            <Grid container spacing={16} alignItems="center">
-              <Grid item>
-                <SearchIcon className={classes.block} color="inherit" />
-              </Grid>
-              <Grid item xs>
-                <TextField
-                  fullWidth
-                  placeholder="Search by email address, phone number, or user UID"
-                  InputProps={{
-                    disableUnderline: true,
-                    className: classes.searchInput
-                  }}
-                />
-              </Grid>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.addUser}
-                >
-                  Add user
-                </Button>
                 <Tooltip title="Reload">
                   <IconButton>
                     <RefreshIcon className={classes.block} color="inherit" />
@@ -185,26 +118,118 @@ class OrderList extends React.Component {
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Dessert (100g serving)</TableCell>
-                <TableCell align="right">Calories</TableCell>
-                <TableCell align="right">Fat (g)</TableCell>
-                <TableCell align="right">Carbs (g)</TableCell>
-                <TableCell align="right">Protein (g)</TableCell>
+                <TableCell> User name </TableCell>
+                <TableCell align="right">Phone number</TableCell>
+                <TableCell align="right">Address</TableCell>
+                <TableCell align="right">Buckets</TableCell>
+                <TableCell align="right">Payment</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">User note</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map(row => {
-                return (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
-                  </TableRow>
-                );
+              {this.state.fetchedData.map(row => {
+                if (row.status.id == "1") {
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {row.appUser.name}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.appUser.phoneNumber}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.address.street}, кв {row.address.apartment},
+                        подъезд {row.address.entrance}, этаж {row.address.floor}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.bucketList[0].type.name}, кол-во:{" "}
+                        {row.bucketList[0].count}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.paymentType.name}
+                      </TableCell>
+                      <TableCell align="right">{row.status.name}</TableCell>
+                      <TableCell align="right">{row.userNote}</TableCell>
+                    </TableRow>
+                  );
+                } else {
+                  return;
+                }
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </Paper>
+    );
+    const tab2 = (
+      <Paper className={classes.paper}>
+        <AppBar
+          className={classes.searchBar}
+          position="static"
+          color="default"
+          elevation={0}
+        >
+          <Toolbar>
+            <Grid container spacing={16} alignItems="center">
+              <Grid item>
+                <TableChart className={classes.block} color="inherit" />
+              </Grid>
+              <Grid item xs>
+                <Typography>Completed Orders</Typography>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Reload">
+                  <IconButton>
+                    <RefreshIcon className={classes.block} color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Toolbar>
+        </AppBar>
+        <div className={classes.contentWrapper}>
+          <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell> User name </TableCell>
+                <TableCell align="right">Phone number</TableCell>
+                <TableCell align="right">Address</TableCell>
+                <TableCell align="right">Buckets</TableCell>
+                <TableCell align="right">Payment</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">User note</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.fetchedData.map(row => {
+                if (row.status.id == "3") {
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {row.appUser.name}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.appUser.phoneNumber}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.address.street}, кв {row.address.apartment},
+                        подъезд {row.address.entrance}, этаж {row.address.floor}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.bucketList[0].type.name}, кол-во:{" "}
+                        {row.bucketList[0].count}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.paymentType.name}
+                      </TableCell>
+                      <TableCell align="right">{row.status.name}</TableCell>
+                      <TableCell align="right">{row.userNote}</TableCell>
+                    </TableRow>
+                  );
+                } else {
+                  return;
+                }
               })}
             </TableBody>
           </Table>
@@ -213,19 +238,143 @@ class OrderList extends React.Component {
     );
     const tab3 = (
       <Paper className={classes.paper}>
+        <AppBar
+          className={classes.searchBar}
+          position="static"
+          color="default"
+          elevation={0}
+        >
+          <Toolbar>
+            <Grid container spacing={16} alignItems="center">
+              <Grid item>
+                <TableChart className={classes.block} color="inherit" />
+              </Grid>
+              <Grid item xs>
+                <Typography>Completed Orders</Typography>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Reload">
+                  <IconButton>
+                    <RefreshIcon className={classes.block} color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Toolbar>
+        </AppBar>
         <div className={classes.contentWrapper}>
-          <Typography color="textSecondary" align="center">
-            Tab 3
-          </Typography>
+          <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell> User name </TableCell>
+                <TableCell align="right">Phone number</TableCell>
+                <TableCell align="right">Address</TableCell>
+                <TableCell align="right">Buckets</TableCell>
+                <TableCell align="right">Payment</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">User note</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.fetchedData.map(row => {
+                if (row.status.id == "4") {
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {row.appUser.name}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.appUser.phoneNumber}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.address.street}, кв {row.address.apartment},
+                        подъезд {row.address.entrance}, этаж {row.address.floor}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.bucketList[0].type.name}, кол-во:{" "}
+                        {row.bucketList[0].count}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.paymentType.name}
+                      </TableCell>
+                      <TableCell align="right">{row.status.name}</TableCell>
+                      <TableCell align="right">{row.userNote}</TableCell>
+                    </TableRow>
+                  );
+                } else {
+                  return;
+                }
+              })}
+            </TableBody>
+          </Table>
         </div>
       </Paper>
     );
     const tab4 = (
       <Paper className={classes.paper}>
+        <AppBar
+          className={classes.searchBar}
+          position="static"
+          color="default"
+          elevation={0}
+        >
+          <Toolbar>
+            <Grid container spacing={16} alignItems="center">
+              <Grid item>
+                <TableChart className={classes.block} color="inherit" />
+              </Grid>
+              <Grid item xs>
+                <Typography>Completed Orders</Typography>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Reload">
+                  <IconButton>
+                    <RefreshIcon className={classes.block} color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Toolbar>
+        </AppBar>
         <div className={classes.contentWrapper}>
-          <Typography color="textSecondary" align="center">
-            Tab 4
-          </Typography>
+          <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell> User name </TableCell>
+                <TableCell align="right">Phone number</TableCell>
+                <TableCell align="right">Address</TableCell>
+                <TableCell align="right">Buckets</TableCell>
+                <TableCell align="right">Payment</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">User note</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.fetchedData.map(row => {
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell component="th" scope="row">
+                      {row.appUser.name}
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.appUser.phoneNumber}
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.address.street}, кв {row.address.apartment}, подъезд{" "}
+                      {row.address.entrance}, этаж {row.address.floor}
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.bucketList[0].type.name}, кол-во:{" "}
+                      {row.bucketList[0].count}
+                    </TableCell>
+                    <TableCell align="right">{row.paymentType.name}</TableCell>
+                    <TableCell align="right">{row.status.name}</TableCell>
+                    <TableCell align="right">{row.userNote}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
       </Paper>
     );

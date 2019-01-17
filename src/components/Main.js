@@ -10,9 +10,9 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Hidden from "@material-ui/core/Hidden";
 import Header from "./Header";
 import Navigator from "./Navigator";
-import routes from "../routes/routes";
-import AuthService from "./AuthService";
-import withAuth from "./withAuth";
+import routes from "./routes/routes";
+import AuthService from "./auth/AuthService";
+import withAuth from "./auth/withAuth";
 
 const Auth = new AuthService();
 

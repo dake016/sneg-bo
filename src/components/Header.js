@@ -13,8 +13,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import AuthService from "./AuthService";
-import withAuth from "./withAuth";
+import AuthService from "./auth/AuthService";
+import withAuth from "./auth/withAuth";
 
 const Auth = new AuthService();
 
@@ -60,7 +60,6 @@ class Header extends React.Component {
   };
 
   render() {
-    console.log(this.props);
     const { classes, onDrawerToggle } = this.props;
 
     return (
@@ -122,7 +121,7 @@ class Header extends React.Component {
                   color="inherit"
                   size="small"
                 >
-                  {this.props.user.sub}
+                  {this.props.user.username}
                 </Button>
               </Grid>
               <Grid item>

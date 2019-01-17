@@ -1,8 +1,8 @@
 import PeopleIcon from "@material-ui/icons/People";
 import DnsRoundedIcon from "@material-ui/icons/DnsRounded";
 
-import OrderList from "../components/OrderList";
-import Database from "../components/Content2";
+import OrderList from "../OrderList";
+import Database from "../Content2";
 
 const routes = [
   {

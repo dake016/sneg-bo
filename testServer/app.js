@@ -36,8 +36,8 @@ let users = [
   {
     id: 7,
     role: "ap_admin",
-    username: "test",
-    password: "asdf123"
+    username: "a",
+    password: "a"
   },
   {
     id: 1,

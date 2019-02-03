@@ -3,7 +3,7 @@ import { hot } from "react-hot-loader";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import Main from "./components/Main";
-import Login from "./components/auth/Login";
+import Login from "./components/Auth/Login";
 
 import "./App.css";
 

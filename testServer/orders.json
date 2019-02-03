@@ -1,273 +1,380 @@
 [
   {
     "id": 1,
-    "providerId": 1,
+    "registered": 1548505066576,
     "appUser": {
-      "phoneNumber": "+77024733224",
-      "name": "dake"
+      "id": 0,
+      "phoneNumber": "+77774126677",
+      "fullName": "Байсалов Дияр",
+      "role": null,
+      "registered": null,
+      "verified": true
     },
-    "address": {
-      "street": "Тархана 9",
-      "apartment": "277",
-      "entrance": "6",
-      "floor": "4"
-    },
-    "bucketList": [
+    "basketList": [
       {
+        "id": 0,
         "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
+          "id": 0,
+          "name": "BLANKETS",
+          "description": "Пледы и одеяла",
+          "price": 1500
         },
-        "count": 3,
-        "price": 2500
+        "count": 3
       },
       {
+        "id": 0,
         "type": {
-          "id": "2",
-          "name": "Полотенца и банное"
+          "id": 0,
+          "name": "CLOTHES",
+          "description": "Одежда",
+          "price": 1500
         },
-        "count": 2,
-        "price": 2500
+        "count": 2
       }
     ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
+    "address": {
+      "id": 0,
+      "value": "Тархана 9",
+      "owner": null,
+      "entrance": "6",
+      "floor": "4",
+      "flat": "277",
+      "latitude": null,
+      "longitude": null,
+      "note": "Вход справа"
     },
+    "paymentType": { "id": 0, "name": "CASH", "description": "Наличный" },
+    "note": "Проверьте карманы",
+    "serviceProvider": {
+      "id": 0,
+      "registered": 1548505066577,
+      "name": "ТОО Акжайык",
+      "address": null,
+      "price": 1500,
+      "active": true
+    },
+    "pickupDate": 1548505066577,
+    "returnDate": 1548505066577,
     "status": {
-      "id": "1",
-      "name": "Принят в обработку"
+      "id": 1,
+      "name": "ACCEPTED",
+      "description": "Принят в обработку"
     },
-    "userNote": "Проверьте карманы"
+    "paid": true
   },
   {
     "id": 2,
-    "providerId": 1,
+    "registered": 1548505066123,
     "appUser": {
-      "phoneNumber": "+77777777777",
-      "name": "Bake"
+      "id": 0,
+      "phoneNumber": "+77774126677",
+      "fullName": "Байсалов Дияр",
+      "role": null,
+      "registered": null,
+      "verified": true
     },
-    "address": {
-      "street": "Достык 59",
-      "apartment": "45",
-      "entrance": "1",
-      "floor": "3"
-    },
-    "bucketList": [
+    "basketList": [
       {
+        "id": 0,
         "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
+          "id": 0,
+          "name": "BLANKETS",
+          "description": "Пледы и одеяла",
+          "price": 1500
         },
-        "count": 1,
-        "price": 2500
+        "count": 3
       },
       {
+        "id": 0,
         "type": {
-          "id": "2",
-          "name": "Полотенца и банное"
+          "id": 0,
+          "name": "CLOTHES",
+          "description": "Одежда",
+          "price": 1500
         },
-        "count": 1,
-        "price": 2500
+        "count": 2
       }
     ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
+    "address": {
+      "id": 0,
+      "value": "Тархана 9",
+      "owner": null,
+      "entrance": "6",
+      "floor": "4",
+      "flat": "277",
+      "latitude": null,
+      "longitude": null,
+      "note": "Вход справа"
     },
+    "paymentType": { "id": 0, "name": "CASH", "description": "Карта" },
+    "note": "",
+    "serviceProvider": {
+      "id": 0,
+      "registered": 1548505066577,
+      "name": "ТОО Акжайык",
+      "address": null,
+      "price": 1500,
+      "active": true
+    },
+    "pickupDate": 1548505066577,
+    "returnDate": 1548505066577,
     "status": {
-      "id": "1",
-      "name": "Принят в обработку"
+      "id": 3,
+      "name": "CANCELED",
+      "description": "Заказ отменен"
     },
-    "userNote": ""
+    "paid": true
   },
   {
-    "id": 3,
-    "providerId": 1,
+    "id": 23,
+    "registered": 1548505067312,
     "appUser": {
-      "phoneNumber": "+77079999999",
-      "name": "Жандос"
+      "id": 0,
+      "phoneNumber": "+77774126677",
+      "fullName": "Байсалов Дияр",
+      "role": null,
+      "registered": null,
+      "verified": true
     },
-    "address": {
-      "street": "Республика 101",
-      "apartment": "97",
-      "entrance": "3",
-      "floor": "15"
-    },
-    "bucketList": [
+    "basketList": [
       {
+        "id": 0,
         "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
+          "id": 0,
+          "name": "BLANKETS",
+          "description": "Пледы и одеяла",
+          "price": 1500
         },
-        "count": 3,
-        "price": 2500
-      }
-    ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
-    },
-    "status": {
-      "id": "3",
-      "name": "Выполнен"
-    },
-    "userNote": ""
-  },
-  {
-    "id": 4,
-    "providerId": 1,
-    "appUser": {
-      "phoneNumber": "+7011542154",
-      "name": "Афоня"
-    },
-    "address": {
-      "street": "Кошкарбаева",
-      "apartment": "123б",
-      "entrance": "1",
-      "floor": "5"
-    },
-    "bucketList": [
-      {
-        "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
-        },
-        "count": 3,
-        "price": 2500
+        "count": 3
       },
       {
+        "id": 0,
         "type": {
-          "id": "2",
-          "name": "Полотенца и банное"
+          "id": 0,
+          "name": "CLOTHES",
+          "description": "Одежда",
+          "price": 1500
         },
-        "count": 2,
-        "price": 2500
+        "count": 2
       }
     ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
+    "address": {
+      "id": 0,
+      "value": "Тархана 9",
+      "owner": null,
+      "entrance": "6",
+      "floor": "4",
+      "flat": "277",
+      "latitude": null,
+      "longitude": null,
+      "note": "Вход справа"
     },
+    "paymentType": { "id": 0, "name": "CASH", "description": "Наличный" },
+    "note": "Все постирать",
+    "serviceProvider": {
+      "id": 0,
+      "registered": 1548505066577,
+      "name": "ТОО Акжайык",
+      "address": null,
+      "price": 1500,
+      "active": true
+    },
+    "pickupDate": 1548505066577,
+    "returnDate": 1548505066577,
     "status": {
-      "id": "3",
-      "name": "Выполнен"
+      "id": 4,
+      "name": "DONE",
+      "description": "Выполнен"
     },
-    "userNote": ""
+    "paid": true
   },
   {
-    "id": 5,
-    "providerId": 2,
+    "id": 12,
+    "registered": 1548505063982,
     "appUser": {
-      "phoneNumber": "+7715456656",
-      "name": "Мадияр"
+      "id": 0,
+      "phoneNumber": "+77774126677",
+      "fullName": "Байсалов Дияр",
+      "role": null,
+      "registered": null,
+      "verified": true
     },
-    "address": {
-      "street": "Республика 59",
-      "apartment": "45",
-      "entrance": "1",
-      "floor": "3"
-    },
-    "bucketList": [
+    "basketList": [
       {
+        "id": 0,
         "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
+          "id": 0,
+          "name": "BLANKETS",
+          "description": "Пледы и одеяла",
+          "price": 1500
         },
-        "count": 1,
-        "price": 2500
+        "count": 3
       },
       {
+        "id": 0,
         "type": {
-          "id": "2",
-          "name": "Полотенца и банное"
+          "id": 0,
+          "name": "CLOTHES",
+          "description": "Одежда",
+          "price": 1500
         },
-        "count": 1,
-        "price": 2500
+        "count": 2
       }
     ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
+    "address": {
+      "id": 0,
+      "value": "Тархана 9",
+      "owner": null,
+      "entrance": "6",
+      "floor": "4",
+      "flat": "277",
+      "latitude": null,
+      "longitude": null,
+      "note": "Вход справа"
     },
+    "paymentType": { "id": 0, "name": "CASH", "description": "Карта" },
+    "note": "",
+    "serviceProvider": {
+      "id": 0,
+      "registered": 1548505066577,
+      "name": "ТОО Акжайык",
+      "address": null,
+      "price": 1500,
+      "active": true
+    },
+    "pickupDate": 1548505066577,
+    "returnDate": 1548505066577,
     "status": {
-      "id": "1",
-      "name": "Принят в обработку"
+      "id": 1,
+      "name": "ACCEPTED",
+      "description": "Принят в обработку"
     },
-    "userNote": ""
+    "paid": true
   },
   {
-    "id": 6,
-    "providerId": 2,
+    "id": 55,
+    "registered": 1548505066299,
     "appUser": {
-      "phoneNumber": "+77777777777",
-      "name": "Bake"
+      "id": 0,
+      "phoneNumber": "+77774126677",
+      "fullName": "Байсалов Дияр",
+      "role": null,
+      "registered": null,
+      "verified": true
     },
-    "address": {
-      "street": "Достык 59",
-      "apartment": "45",
-      "entrance": "1",
-      "floor": "3"
-    },
-    "bucketList": [
+    "basketList": [
       {
+        "id": 0,
         "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
+          "id": 0,
+          "name": "BLANKETS",
+          "description": "Пледы и одеяла",
+          "price": 1500
         },
-        "count": 2,
-        "price": 2500
-      }
-    ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
-    },
-    "status": {
-      "id": "3",
-      "name": "Выполнен"
-    },
-    "userNote": ""
-  },
-  {
-    "id": 7,
-    "providerId": 2,
-    "appUser": {
-      "phoneNumber": "+77777777777",
-      "name": "Илья"
-    },
-    "address": {
-      "street": "Космонавтов 59",
-      "apartment": "45",
-      "entrance": "1",
-      "floor": "3"
-    },
-    "bucketList": [
-      {
-        "type": {
-          "id": "1",
-          "name": "Одежда и постельное белье"
-        },
-        "count": 1,
-        "price": 2500
+        "count": 3
       },
       {
+        "id": 0,
         "type": {
-          "id": "2",
-          "name": "Полотенца и банное"
+          "id": 0,
+          "name": "CLOTHES",
+          "description": "Одежда",
+          "price": 1500
         },
-        "count": 1,
-        "price": 2500
+        "count": 2
       }
     ],
-    "paymentType": {
-      "id": "0",
-      "name": "Наличные"
+    "address": {
+      "id": 0,
+      "value": "Тархана 9",
+      "owner": null,
+      "entrance": "6",
+      "floor": "4",
+      "flat": "277",
+      "latitude": null,
+      "longitude": null,
+      "note": "Вход справа"
     },
+    "paymentType": { "id": 0, "name": "CASH", "description": "Наличный" },
+    "note": "Отчистить пятна",
+    "serviceProvider": {
+      "id": 0,
+      "registered": 1548505066577,
+      "name": "ТОО Акжайык",
+      "address": null,
+      "price": 1500,
+      "active": true
+    },
+    "pickupDate": 1548505066577,
+    "returnDate": 1548505066577,
     "status": {
-      "id": "4",
-      "name": "Отменен"
+      "id": 1,
+      "name": "ACCEPTED",
+      "description": "Принят в обработку"
     },
-    "userNote": ""
+    "paid": true
+  },
+  {
+    "id": 13,
+    "registered": 1548505423243,
+    "appUser": {
+      "id": 0,
+      "phoneNumber": "+77774126677",
+      "fullName": "Байсалов Дияр",
+      "role": null,
+      "registered": null,
+      "verified": true
+    },
+    "basketList": [
+      {
+        "id": 0,
+        "type": {
+          "id": 0,
+          "name": "BLANKETS",
+          "description": "Пледы и одеяла",
+          "price": 1500
+        },
+        "count": 3
+      },
+      {
+        "id": 0,
+        "type": {
+          "id": 0,
+          "name": "CLOTHES",
+          "description": "Одежда",
+          "price": 1500
+        },
+        "count": 2
+      }
+    ],
+    "address": {
+      "id": 0,
+      "value": "Тархана 9",
+      "owner": null,
+      "entrance": "6",
+      "floor": "4",
+      "flat": "277",
+      "latitude": null,
+      "longitude": null,
+      "note": "Вход справа"
+    },
+    "paymentType": { "id": 0, "name": "CASH", "description": "Наличный" },
+    "note": "Отчистить пятна",
+    "serviceProvider": {
+      "id": 0,
+      "registered": 1548505066577,
+      "name": "ТОО Акжайык",
+      "address": null,
+      "price": 1500,
+      "active": true
+    },
+    "pickupDate": 1548505066577,
+    "returnDate": 1548505066577,
+    "status": {
+      "id": 1,
+      "name": "ACCEPTED",
+      "description": "Принят в обработку"
+    },
+    "paid": true
   }
 ]

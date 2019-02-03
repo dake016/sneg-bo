@@ -11,10 +11,9 @@ import Hidden from "@material-ui/core/Hidden";
 import Header from "./Header";
 import Navigator from "./Navigator";
 import routes from "./routes/routes";
-import AuthService from "./auth/AuthService";
-import withAuth from "./auth/withAuth";
-
-const Auth = new AuthService();
+import AuthService from "./Auth/AuthService";
+import withAuth from "./Auth/withAuth";
+import { red, green } from "@material-ui/core/colors";
 
 let theme = createMuiTheme({
   typography: {
@@ -30,7 +29,9 @@ let theme = createMuiTheme({
       light: "#63ccff",
       main: "#009be5",
       dark: "#006db3"
-    }
+    },
+    error: red,
+    success: green
   },
   shape: {
     borderRadius: 8
@@ -90,7 +91,8 @@ theme = {
     },
     MuiTooltip: {
       tooltip: {
-        borderRadius: 4
+        borderRadius: 4,
+        margin: theme.spacing.unit * 2
       }
     },
     MuiDivider: {

@@ -1,8 +1,8 @@
 import PeopleIcon from "@material-ui/icons/People";
-import DnsRoundedIcon from "@material-ui/icons/DnsRounded";
+import SettingsIcon from "@material-ui/icons/Settings";
 
-import OrderList from "../OrderList";
-import Database from "../Content2";
+import OrdersList from "../Orders/OrdersList";
+import Settings from "../Settings";
 
 const routes = [
   {
@@ -10,14 +10,14 @@ const routes = [
     sidebarName: "Orders List",
     navbarName: "Orders List",
     icon: PeopleIcon,
-    component: OrderList
+    component: OrdersList
   },
   {
-    path: "/database",
-    sidebarName: "Database",
-    navbarName: "Database",
-    icon: DnsRoundedIcon,
-    component: Database
+    path: "/settings",
+    sidebarName: "Settings",
+    navbarName: "Settings",
+    icon: SettingsIcon,
+    component: Settings
   },
   { redirect: true, path: "/", to: "/orders", navbarName: "Redirect" }
 ];

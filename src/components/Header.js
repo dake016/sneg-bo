@@ -13,8 +13,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import AuthService from "./auth/AuthService";
-import withAuth from "./auth/withAuth";
+import AuthService from "./Auth/AuthService";
+import withAuth from "./Auth/withAuth";
 
 const Auth = new AuthService();
 
@@ -81,21 +81,18 @@ class Header extends React.Component {
               </Hidden>
               <Grid item xs />
               <Grid item>
-                <Typography className={classes.link} component="a" href="#">
-                  Go to docs
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Alerts • No alters">
+                <Tooltip title="Help">
                   <IconButton color="inherit">
-                    <NotificationsIcon />
+                    <HelpIcon />
                   </IconButton>
                 </Tooltip>
               </Grid>
               <Grid item>
-                <IconButton color="inherit" onClick={this.handleLogout}>
-                  <AccountCircleIcon />
-                </IconButton>
+                <Tooltip title="Logout">
+                  <IconButton color="inherit" onClick={this.handleLogout}>
+                    <AccountCircleIcon />
+                  </IconButton>
+                </Tooltip>
               </Grid>
             </Grid>
           </Toolbar>
@@ -113,23 +110,6 @@ class Header extends React.Component {
                 <Typography color="inherit" variant="h5">
                   {this.makeBrand()}
                 </Typography>
-              </Grid>
-              <Grid item>
-                <Button
-                  className={classes.button}
-                  variant="outlined"
-                  color="inherit"
-                  size="small"
-                >
-                  {this.props.user.username}
-                </Button>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Help">
-                  <IconButton color="inherit">
-                    <HelpIcon />
-                  </IconButton>
-                </Tooltip>
               </Grid>
             </Grid>
           </Toolbar>

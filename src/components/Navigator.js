@@ -102,9 +102,8 @@ const Navigator = ({ ...props }) => {
             classes.itemCategory
           )}
         >
-          Back Office
+          Backoffice
         </ListItem>
-        <React.Fragment>{links}</React.Fragment>
         <Divider className={classes.divider} />
         <React.Fragment>{links}</React.Fragment>
       </List>

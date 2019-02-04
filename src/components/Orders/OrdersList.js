@@ -2,13 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
-import Typography from "@material-ui/core/Typography";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
-import Orders from "./Orders";
-import Tmp from "./Tmp";
+import OrdersTable from "./OrdersTable";
+
+const statusList = {
+  ACCEPTED: "Принят в обработку",
+  PICKUP: "Ожидание курьера",
+  PROCESSING: "Стирается",
+  RETURN: "Ожидание курьера",
+  COMPLETED: "Завершен",
+  CANCELED: "Отменен",
+  DISPUTE: "Диспут"
+};
 
 const styles = theme => ({
   secondaryBar: {
@@ -35,27 +43,15 @@ const styles = theme => ({
   },
   mainContent: {
     flex: 1,
-    padding: "48px 36px 0",
+    padding: "14px 36px 0",
     background: "#eaeff1"
   }
 });
 
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  );
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired
-};
-
 function dataUpToStatus(data, status) {
   var newData = [];
   data.map(row => {
-    if (status.includes(+row.status.id)) {
+    if (status.includes(row.status.name) || status[0] == "ALL") {
       newData.push(row);
     }
   });
@@ -65,7 +61,7 @@ function dataUpToStatus(data, status) {
 function dataUpToStatusVisible(data, status) {
   var newData = [];
   data.map(row => {
-    if (status.includes(+row.status.id)) {
+    if (status.includes(row.status.name) || status[0] == "ALL") {
       newData.push({
         id: row.id,
         registered: row.registered,
@@ -89,6 +85,20 @@ class OrdersList extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ activeTab: value });
+  };
+
+  handleOrderStatusChange = (event, ids, type) => {
+    event.preventDefault();
+    var newData = [];
+    this.state.rows.map(row => {
+      if (ids.includes(+row.id)) {
+        row.status.name = type;
+        row.status.description = statusList[type];
+        console.log(row);
+      }
+      newData.push(row);
+    });
+    this.setState({ rows: newData });
   };
 
   componentDidMount() {
@@ -115,54 +125,43 @@ class OrdersList extends React.Component {
             value={activeTab}
             onChange={this.handleChange}
           >
-            <Tab textColor="inherit" label="Active orders" />
-            <Tab textColor="inherit" label="Done orders" />
-            <Tab textColor="inherit" label="Canceled orders" />
-            <Tab textColor="inherit" label="All orders  " />
+            <Tab textColor="inherit" label="Активные" />
+            <Tab textColor="inherit" label="Выполненые" />
+            <Tab textColor="inherit" label="Отмененные" />
+            <Tab textColor="inherit" label="Все заказы" />
           </Tabs>
         </AppBar>
         <main className={classes.mainContent}>
           {activeTab === 0 && (
-            <Tmp
-              allRows={dataUpToStatus(this.state.rows, [1, 2, 3, 4, 5])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, [
-                1,
-                2,
-                3,
-                4,
-                5
-              ])}
+            <OrdersTable
+              allRows={dataUpToStatus(this.state.rows, ["ACCEPTED"])}
+              visibleRows={dataUpToStatusVisible(this.state.rows, ["ACCEPTED"])}
+              activeTab={activeTab}
+              handleOrderStatusChange={this.handleOrderStatusChange}
             />
           )}
           {activeTab === 1 && (
-            <TabContainer>
-              <Orders
-                rows={this.state.rows}
-                classes={classes}
-                title="Completed Orders"
-                tabIds={[3]}
-              />
-            </TabContainer>
+            <OrdersTable
+              allRows={dataUpToStatus(this.state.rows, ["COMPLETED"])}
+              visibleRows={dataUpToStatusVisible(this.state.rows, [
+                "COMPLETED"
+              ])}
+              activeTab={activeTab}
+            />
           )}
           {activeTab === 2 && (
-            <TabContainer>
-              <Orders
-                rows={this.state.rows}
-                classes={classes}
-                title="Canceled Orders"
-                tabIds={[4]}
-              />
-            </TabContainer>
+            <OrdersTable
+              allRows={dataUpToStatus(this.state.rows, ["CANCELED"])}
+              visibleRows={dataUpToStatusVisible(this.state.rows, ["CANCELED"])}
+              activeTab={activeTab}
+            />
           )}
           {activeTab === 3 && (
-            <TabContainer>
-              <Orders
-                rows={this.state.rows}
-                classes={classes}
-                title="All Orders"
-                tabIds={[0, 1, 3, 2, 4]}
-              />
-            </TabContainer>
+            <OrdersTable
+              allRows={dataUpToStatus(this.state.rows, ["ALL"])}
+              visibleRows={dataUpToStatusVisible(this.state.rows, ["ALL"])}
+              activeTab={activeTab}
+            />
           )}
         </main>
       </React.Fragment>

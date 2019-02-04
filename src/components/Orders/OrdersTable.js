@@ -55,20 +55,25 @@ function toDateTime(millisecs) {
 const rows = [
   {
     id: "id",
-    numeric: true,
-    disablePadding: false,
-    label: "Order ID"
+    numeric: false,
+    disablePadding: true,
+    label: "Номер заказа"
   },
   {
     id: "registered",
     numeric: true,
     disablePadding: false,
-    label: "Registered date"
+    label: "Дата регистрации"
   },
-  { id: "baskets", numeric: true, disablePadding: false, label: "Baskets" },
-  { id: "payment", numeric: true, disablePadding: false, label: "Payment" },
-  { id: "status", numeric: true, disablePadding: false, label: "Status" },
-  { id: "note", numeric: true, disablePadding: false, label: "User note" }
+  { id: "baskets", numeric: true, disablePadding: false, label: "Корзины" },
+  { id: "payment", numeric: true, disablePadding: false, label: "Оплата" },
+  { id: "status", numeric: true, disablePadding: false, label: "Статус" },
+  {
+    id: "note",
+    numeric: true,
+    disablePadding: false,
+    label: "Комментарий пользователя"
+  }
 ];
 
 class EnhancedTableHead extends React.Component {
@@ -104,7 +109,7 @@ class EnhancedTableHead extends React.Component {
                 sortDirection={orderBy === row.id ? order : false}
               >
                 <Tooltip
-                  title="Sort"
+                  title="Сортировать"
                   placement={row.numeric ? "bottom-end" : "bottom-start"}
                   enterDelay={300}
                 >
@@ -143,22 +148,45 @@ const toolbarStyles = theme => ({
     theme.palette.type === "light"
       ? {
           color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+          borderRadius: 8
         }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
+          color: theme.palette.text.primary
         },
   spacer: {
     flex: "1 1 auto"
   },
   title: {
     flex: "0 0 auto"
+  },
+  doneOrderButton: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#388e3c",
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#388e3c",
+    margin: "10px 20px 0"
+  },
+  cancelOrderButton: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#f44336",
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#f44336",
+    margin: "10px 20px 0"
   }
 });
 
 let EnhancedTableToolbar = props => {
-  const { numSelected, classes, onDeleteClick } = props;
+  const {
+    selected,
+    numSelected,
+    classes,
+    handleOrderStatusChange,
+    activeTab
+  } = props;
 
   return (
     <Toolbar
@@ -169,32 +197,38 @@ let EnhancedTableToolbar = props => {
       <div className={classes.title}>
         {numSelected > 0 ? (
           <Typography color="inherit" variant="subtitle1">
-            {numSelected} selected
+            Выбрано {numSelected}
           </Typography>
         ) : (
           <Typography variant="h6" id="tableTitle">
-            Orders
+            Заказы
           </Typography>
         )}
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 ? (
+        {numSelected > 0 && activeTab == 0 ? (
           <React.Fragment>
-            <Tooltip title="Order done">
-              <Button>Done</Button>
-            </Tooltip>
-            <Tooltip title="Cancel order">
-              <Button>Cancel</Button>
-            </Tooltip>
+            <Button
+              onClick={event =>
+                handleOrderStatusChange(event, selected, "COMPLETED")
+              }
+              className={classes.doneOrderButton}
+              variant="outlined"
+            >
+              Выполнить заказ(ы)
+            </Button>
+            <Button
+              onClick={event =>
+                handleOrderStatusChange(event, selected, "CANCELED")
+              }
+              className={classes.cancelOrderButton}
+              variant="outlined"
+            >
+              Отменить заказ(ы)
+            </Button>
           </React.Fragment>
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+        ) : null}
       </div>
     </Toolbar>
   );
@@ -220,10 +254,10 @@ const styles = theme => ({
   }
 });
 
-class EnhancedTable extends React.Component {
+class OrdersTable extends React.Component {
   state = {
     order: "asc",
-    orderBy: "id",
+    orderBy: "registered",
     selected: [],
     page: 0,
     rowsPerPage: 5
@@ -259,7 +293,7 @@ class EnhancedTable extends React.Component {
   };
 
   handleRowClick = (event, id) => {
-    console.log();
+    console.log(id);
   };
 
   handleCheckboxClick = (event, id) => {
@@ -279,7 +313,6 @@ class EnhancedTable extends React.Component {
         selected.slice(selectedIndex + 1)
       );
     }
-
     this.setState({ selected: newSelected });
   };
 
@@ -299,8 +332,11 @@ class EnhancedTable extends React.Component {
     return (
       <Paper className={classes.root}>
         <EnhancedTableToolbar
+          selected={selected}
           numSelected={selected.length}
           onDeleteClick={this.onDeleteClick}
+          activeTab={this.props.activeTab}
+          handleOrderStatusChange={this.props.handleOrderStatusChange}
         />
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
@@ -362,11 +398,15 @@ class EnhancedTable extends React.Component {
           count={data.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          labelRowsPerPage="Строк на странице:"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}-${to} из ${count}`
+          }
           backIconButtonProps={{
-            "aria-label": "Previous Page"
+            "aria-label": "Предыдущая страница"
           }}
           nextIconButtonProps={{
-            "aria-label": "Next Page"
+            "aria-label": "Следующая страница"
           }}
           onChangePage={this.handleChangePage}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -376,8 +416,8 @@ class EnhancedTable extends React.Component {
   }
 }
 
-EnhancedTable.propTypes = {
+OrdersTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(EnhancedTable);
+export default withStyles(styles)(OrdersTable);

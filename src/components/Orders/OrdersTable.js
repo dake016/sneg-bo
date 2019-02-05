@@ -13,12 +13,10 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
-import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
-import DeleteIcon from "@material-ui/icons/Delete";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import { lighten } from "@material-ui/core/styles/colorManipulator";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -241,6 +239,32 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
+function OrderDetails(props) {
+  const { onClose, selectedRow, ...other } = props;
+
+  function handleClose() {
+    onClose();
+  }
+
+  return (
+    <Dialog
+      fullWidth={true}
+      maxWidth="lg"
+      onClose={handleClose}
+      aria-labelledby="simple-dialog-title"
+      {...other}
+    >
+      <DialogTitle id="simple-dialog-title">Hello World</DialogTitle>
+      <Paper> {selectedRow.id}</Paper>
+    </Dialog>
+  );
+}
+
+OrderDetails.propTypes = {
+  onClose: PropTypes.func,
+  selectedRow: PropTypes.object
+};
+
 const styles = theme => ({
   root: {
     width: "100%",
@@ -260,7 +284,9 @@ class OrdersTable extends React.Component {
     orderBy: "registered",
     selected: [],
     page: 0,
-    rowsPerPage: 5
+    rowsPerPage: 5,
+    modalOpen: false,
+    selectedRow: {}
   };
 
   handleRequestSort = (event, property) => {
@@ -293,7 +319,14 @@ class OrdersTable extends React.Component {
   };
 
   handleRowClick = (event, id) => {
-    console.log(id);
+    this.props.allRows.map(row =>
+      row.id == id ? this.setState({ selectedRow: row }) : null
+    );
+    this.setState({ modalOpen: true });
+  };
+
+  handleModalClose = () => {
+    this.setState({ modalOpen: false });
   };
 
   handleCheckboxClick = (event, id) => {
@@ -316,10 +349,6 @@ class OrdersTable extends React.Component {
     this.setState({ selected: newSelected });
   };
 
-  onDeleteClick = event => {
-    console.log(this.state.selected);
-  };
-
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -331,10 +360,14 @@ class OrdersTable extends React.Component {
 
     return (
       <Paper className={classes.root}>
+        <OrderDetails
+          open={this.state.modalOpen}
+          onClose={this.handleModalClose}
+          selectedRow={this.state.selectedRow}
+        />
         <EnhancedTableToolbar
           selected={selected}
           numSelected={selected.length}
-          onDeleteClick={this.onDeleteClick}
           activeTab={this.props.activeTab}
           handleOrderStatusChange={this.props.handleOrderStatusChange}
         />

@@ -90,21 +90,38 @@ class OrdersList extends React.Component {
   handleOrderStatusChange = (event, ids, type) => {
     event.preventDefault();
     var newData = [];
+    var updateJson = [];
     this.state.rows.map(row => {
       if (ids.includes(+row.id)) {
+        updateJson.push(row);
         row.status.name = type;
         row.status.description = statusList[type];
         console.log(row);
       }
       newData.push(row);
     });
+    this.updateOrderStatus(updateJson);
+    this.getOrdersList();
     this.setState({ rows: newData });
   };
 
   componentDidMount() {
-    this.Auth.fetch(`${this.Auth.domain}/orders`, { method: "GET" })
+    this.getOrdersList();
+  }
+
+  getOrdersList() {
+    this.Auth.fetch(`${this.Auth.domain}/order/all`, { method: "GET" })
       .then(response => this.setState({ rows: response }))
       .catch(error => alert("Orders " + error));
+  }
+
+  updateOrderStatus(newJson) {
+    this.Auth.fetch(`${this.Auth.domain}/order/update/status/5`, {
+      method: "POST",
+      body: JSON.stringify(newJson)
+    })
+      .then(response => console.log(response))
+      .catch(error => alert("Orders Update " + error));
   }
 
   render() {
@@ -147,6 +164,7 @@ class OrdersList extends React.Component {
                 "COMPLETED"
               ])}
               activeTab={activeTab}
+              handleOrderStatusChange={this.handleOrderStatusChange}
             />
           )}
           {activeTab === 2 && (

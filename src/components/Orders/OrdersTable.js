@@ -17,6 +17,12 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import TextField from "@material-ui/core/TextField";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -205,7 +211,8 @@ let EnhancedTableToolbar = props => {
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 && activeTab == 0 ? (
+        {numSelected > 0 && (
+          // activeTab == 0 ?
           <React.Fragment>
             <Button
               onClick={event =>
@@ -226,7 +233,9 @@ let EnhancedTableToolbar = props => {
               Отменить заказ(ы)
             </Button>
           </React.Fragment>
-        ) : null}
+        )
+        // : null
+        }
       </div>
     </Toolbar>
   );
@@ -239,30 +248,45 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
-function OrderDetails(props) {
-  const { onClose, selectedRow, ...other } = props;
-
-  function handleClose() {
-    onClose();
+class OrderDetails extends React.Component {
+  handleClose = () => {
+    this.props.onClose();
+  };
+  render() {
+    const { onClose, selectedRow, ...other } = this.props;
+    return (
+      <Dialog
+        fullWidth={true}
+        maxWidth="lg"
+        onClose={this.handleClose}
+        aria-labelledby="simple-dialog-title"
+        {...other}
+      >
+        <DialogTitle id="simple-dialog-title">
+          Заказ номер №{selectedRow.id}
+        </DialogTitle>
+        <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
+          <FormControl>
+            <FormLabel>Информация пользователя</FormLabel>
+            <FormGroup row>
+              <Typography>{console.log(selectedRow.address)}</Typography>
+            </FormGroup>
+          </FormControl>
+          <FormGroup row>
+            <TextField
+              placeholder="Добавьте ваш комментарий"
+              label="Комментарий к заказу"
+            />
+          </FormGroup>
+        </Paper>
+      </Dialog>
+    );
   }
-
-  return (
-    <Dialog
-      fullWidth={true}
-      maxWidth="lg"
-      onClose={handleClose}
-      aria-labelledby="simple-dialog-title"
-      {...other}
-    >
-      <DialogTitle id="simple-dialog-title">Hello World</DialogTitle>
-      <Paper> {selectedRow.id}</Paper>
-    </Dialog>
-  );
 }
 
 OrderDetails.propTypes = {
   onClose: PropTypes.func,
-  selectedRow: PropTypes.object
+  selectedRow: PropTypes.object.isRequired
 };
 
 const styles = theme => ({

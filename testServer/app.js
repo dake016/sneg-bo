@@ -58,7 +58,7 @@ let users = [
 ];
 
 // LOGIN ROUTE
-app.post("/login", (req, res) => {
+app.post("/bo/sign-in", (req, res) => {
   const { username, password } = req.body;
   // Use your DB ORM logic here to find user and compare password
   for (let user of users) {
@@ -94,7 +94,7 @@ app.get("/", jwtMW /* Using the express jwt MW here */, (req, res) => {
   res.send("You are authenticated"); //Sending some response when authenticated
 });
 
-app.get("/orders", jwtMW, (req, res) => {
+app.get("/order/all", jwtMW, (req, res) => {
   res.send(orders);
 });
 

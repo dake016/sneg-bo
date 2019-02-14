@@ -51,17 +51,17 @@ function getSorting(order, orderBy) {
 function toDateTime(date) {
   var m = new Date(date);
   var dateString =
-    ("0" + m.getUTCDate()).slice(-2) +
+    ("0" + m.getDate()).slice(-2) +
     "." +
-    ("0" + (m.getUTCMonth() + 1)).slice(-2) +
+    ("0" + (m.getMonth() + 1)).slice(-2) +
     "." +
-    m.getUTCFullYear() +
+    m.getFullYear() +
     " " +
-    ("0" + m.getUTCHours()).slice(-2) +
+    ("0" + m.getHours()).slice(-2) +
     ":" +
-    ("0" + m.getUTCMinutes()).slice(-2) +
+    ("0" + m.getMinutes()).slice(-2) +
     ":" +
-    ("0" + m.getUTCSeconds()).slice(-2);
+    ("0" + m.getSeconds()).slice(-2);
 
   return dateString;
 }
@@ -308,7 +308,11 @@ class OrderDetails extends React.Component {
           <FormControl>
             <FormLabel>Информация пользователя</FormLabel>
             <div>Имя пользователя</div>
-            <div>{selectedRow.appUser.fullName}</div>
+            <div>
+              {selectedRow.appUser.fullName
+                ? selectedRow.appUser.fullName
+                : "-"}
+            </div>
             <div>Номер телефона</div>
             <div>{selectedRow.appUser.phoneNumber}</div>
             <FormLabel>Заказ</FormLabel>
@@ -334,7 +338,7 @@ class OrderDetails extends React.Component {
             <div>Дата регистрации</div>
             <div>{toDateTime(selectedRow.serviceProvider.registered)}</div>
             <FormLabel>Комментарий пользователя</FormLabel>
-            <div>{selectedRow.note}</div>
+            <div>{selectedRow.note ? selectedRow.note : "-"}</div>
             <FormLabel>Статус заказа</FormLabel>
             <div>{selectedRow.status.description}</div>
           </FormControl>

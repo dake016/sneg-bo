@@ -106,12 +106,6 @@ class OrdersList extends React.Component {
     this.getAllsp();
   }
 
-  getAllusers() {
-    this.Auth.fetch(`${this.Auth.domain}/app-user/all`, { method: "GET" })
-      .then(response => console.log(response.content))
-      .catch(error => alert(error));
-  }
-
   getAllsp() {
     this.Auth.fetch(`${this.Auth.domain}/sp/all`, { method: "GET" })
       .then(response => console.log(response.content))

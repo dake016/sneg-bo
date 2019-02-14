@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
-import UsersTable from "./UsersTable";
+import ProvidersTable from "./ProvidersTable";
 
 const styles = theme => ({
   secondaryBar: {
@@ -40,17 +40,14 @@ function visibleData(data) {
   data.map(row => {
     newData.push({
       id: row.id,
-      phone: row.phoneNumber,
-      name: row.fullName,
-      registered: row.registered,
-      lastvisit: row.lastVisit,
-      city: row.city
+      name: row.name,
+      registered: row.registered
     });
   });
   return newData;
 }
 
-class Users extends React.Component {
+class Providers extends React.Component {
   state = {
     rows: []
   };
@@ -58,12 +55,9 @@ class Users extends React.Component {
   Auth = new AuthService();
 
   componentDidMount() {
-    this.Auth.fetch(`${this.Auth.domain}/user/all`, { method: "GET" })
+    this.Auth.fetch(`${this.Auth.domain}/sp/all`, { method: "GET" })
       .then(response => this.setState({ rows: response.content }))
-      .catch(error => alert("user all " + error));
-    this.Auth.fetch(`${this.Auth.domain}/user/orders`, { method: "GET" })
-      .then(response => console.log(response.content))
-      .catch(error => alert("user orders  " + error));
+      .catch(error => alert("SP " + error));
   }
 
   render() {
@@ -72,7 +66,7 @@ class Users extends React.Component {
     return (
       <React.Fragment>
         <main className={classes.mainContent}>
-          <UsersTable
+          <ProvidersTable
             allRows={this.state.rows}
             visibleRows={visibleData(this.state.rows)}
           />
@@ -82,8 +76,8 @@ class Users extends React.Component {
   }
 }
 
-Users.propTypes = {
+Providers.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withAuth(withStyles(styles)(Users));
+export default withAuth(withStyles(styles)(Providers));

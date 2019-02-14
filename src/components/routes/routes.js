@@ -1,7 +1,9 @@
 import PeopleIcon from "@material-ui/icons/People";
 import SettingsIcon from "@material-ui/icons/Settings";
 
-import OrdersList from "../Orders/OrdersList";
+import Orders from "../Orders/Orders";
+import Users from "../Users/Users";
+import Providers from "../Providers/Providers";
 import Settings from "../Settings";
 
 const routes = [
@@ -10,28 +12,28 @@ const routes = [
     sidebarName: "Заказы",
     navbarName: "Заказы",
     icon: PeopleIcon,
-    component: OrdersList
+    component: Orders
   },
   {
     path: "/sp",
     sidebarName: "Прачечные",
     navbarName: "Прачечные",
     icon: PeopleIcon,
-    component: OrdersList
+    component: Providers
   },
   {
     path: "/users",
     sidebarName: "Пользователи",
     navbarName: "Пользователи",
     icon: PeopleIcon,
-    component: OrdersList
+    component: Users
   },
   {
     path: "/finance",
-    sidebarName: "Прачечные",
-    navbarName: "Прачечные",
+    sidebarName: "Финансы",
+    navbarName: "Финансы",
     icon: PeopleIcon,
-    component: OrdersList
+    component: Settings
   },
   {
     path: "/settings",

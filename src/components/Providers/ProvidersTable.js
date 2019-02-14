@@ -71,21 +71,14 @@ const rows = [
     id: "id",
     numeric: false,
     disablePadding: true,
-    label: "Id пользователя",
-    sortable: true
-  },
-  {
-    id: "phone",
-    numeric: true,
-    disablePadding: false,
-    label: "Номер телефона",
+    label: "ID провайдера",
     sortable: true
   },
   {
     id: "name",
     numeric: true,
     disablePadding: false,
-    label: "Имя пользователя",
+    label: "Название",
     sortable: true
   },
   {
@@ -93,20 +86,6 @@ const rows = [
     numeric: true,
     disablePadding: false,
     label: "Дата регистрации",
-    sortable: true
-  },
-  {
-    id: "lastvisit",
-    numeric: true,
-    disablePadding: false,
-    label: "Последний визит",
-    sortable: true
-  },
-  {
-    id: "city",
-    numeric: true,
-    disablePadding: false,
-    label: "Город",
     sortable: true
   }
 ];
@@ -230,7 +209,7 @@ let EnhancedTableToolbar = props => {
           </Typography>
         ) : (
           <Typography variant="h6" id="tableTitle">
-            Пользователи
+            Провайдеры
           </Typography>
         )}
       </div>
@@ -264,15 +243,13 @@ class Details extends React.Component {
         {...other}
       >
         <DialogTitle id="simple-dialog-title">
-          Пользователь №{selectedRow.id}
+          Провайдер №{selectedRow.id}
         </DialogTitle>
         <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
           <FormControl>
-            <FormLabel>Информация пользователя</FormLabel>
+            <FormLabel>Информация провайдера</FormLabel>
             <div>Имя пользователя</div>
-            <div>{selectedRow.fullName ? selectedRow.fullName : "-"}</div>
-            <div>Номер телефона</div>
-            <div>{selectedRow.phoneNumber}</div>
+            <div>{selectedRow.name ? selectedRow.name : "-"}</div>
           </FormControl>
         </Paper>
       </Dialog>
@@ -298,7 +275,7 @@ const styles = theme => ({
   }
 });
 
-class UsersTable extends React.Component {
+class ProvidersTable extends React.Component {
   state = {
     order: "desc",
     orderBy: "registered",
@@ -427,26 +404,17 @@ class UsersTable extends React.Component {
                         {row.id}
                       </TableCell>
                       <TableCell align="right">
-                        {row.phone ? row.phone : "-"}
-                      </TableCell>
-                      <TableCell align="right">
                         {row.name ? row.name : "-"}
                       </TableCell>
                       <TableCell align="right">
                         {row.registered ? toDateTime(row.registered) : "-"}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.lastvisit ? toDateTime(row.lastvisit) : "-"}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.city ? row.city : "-"}
                       </TableCell>
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={7} />
+                  <TableCell colSpan={4} />
                 </TableRow>
               )}
             </TableBody>
@@ -476,8 +444,8 @@ class UsersTable extends React.Component {
   }
 }
 
-UsersTable.propTypes = {
+ProvidersTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(UsersTable);
+export default withStyles(styles)(ProvidersTable);

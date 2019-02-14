@@ -8,15 +8,27 @@ import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
 import OrdersTable from "./OrdersTable";
 
-const statusList = {
-  ACCEPTED: "Принят в обработку",
-  PICKUP: "Ожидание курьера",
-  PROCESSING: "Стирается",
-  RETURN: "Ожидание курьера",
-  COMPLETED: "Завершен",
-  CANCELED: "Отменен",
-  DISPUTE: "Диспут"
-};
+var statusList = [];
+
+function getStatusIdByName(name) {
+  var id = 0;
+  statusList.map(row => {
+    if (row.name == name) {
+      id = row.id;
+    }
+  });
+  return id;
+}
+
+function getStatusByName(name) {
+  var status = {};
+  statusList.map(row => {
+    if (row.name == name) {
+      status = row;
+    }
+  });
+  return status;
+}
 
 const styles = theme => ({
   secondaryBar: {
@@ -65,7 +77,7 @@ function dataUpToStatusVisible(data, status) {
       newData.push({
         id: row.id,
         registered: row.registered,
-        basket: 1,
+        basket: row.basketList,
         payment: row.paymentType.description,
         status: row.status.description,
         note: row.note
@@ -87,42 +99,57 @@ class OrdersList extends React.Component {
     this.setState({ activeTab: value });
   };
 
-  handleOrderStatusChange = (event, ids, type) => {
-    event.preventDefault();
-    var newData = [];
-    var updateJson = [];
-    this.state.rows.map(row => {
-      if (ids.includes(+row.id)) {
-        updateJson.push(row);
-        row.status.name = type;
-        row.status.description = statusList[type];
-        console.log(row);
-      }
-      newData.push(row);
-    });
-    this.updateOrderStatus(updateJson);
-    this.getOrdersList();
-    this.setState({ rows: newData });
-  };
-
   componentDidMount() {
     this.getOrdersList();
+    this.getStatuses();
+    this.getAllusers();
+    this.getAllsp();
+  }
+
+  getAllusers() {
+    this.Auth.fetch(`${this.Auth.domain}/app-user/all`, { method: "GET" })
+      .then(response => console.log(response.content))
+      .catch(error => alert(error));
+  }
+
+  getAllsp() {
+    this.Auth.fetch(`${this.Auth.domain}/sp/all`, { method: "GET" })
+      .then(response => console.log(response.content))
+      .catch(error => alert(error));
   }
 
   getOrdersList() {
     this.Auth.fetch(`${this.Auth.domain}/order/all`, { method: "GET" })
-      .then(response => this.setState({ rows: response }))
+      .then(response => this.setState({ rows: response.content }))
       .catch(error => alert("Orders " + error));
   }
 
-  updateOrderStatus(newJson) {
-    this.Auth.fetch(`${this.Auth.domain}/order/update/status/5`, {
+  getStatuses() {
+    this.Auth.fetch(`${this.Auth.domain}/order/statuses`, { method: "GET" })
+      .then(response => (statusList = response.content))
+      .catch(error => alert("Statuses " + error));
+  }
+
+  updateOrderStatus(newJson, id) {
+    console.log(id);
+    this.Auth.fetch(`${this.Auth.domain}/order/update/status/${id}`, {
       method: "POST",
       body: JSON.stringify(newJson)
     })
-      .then(response => console.log(response))
+      .then(() => this.getOrdersList())
       .catch(error => alert("Orders Update " + error));
   }
+
+  handleOrderStatusChange = (event, ids, type) => {
+    event.preventDefault();
+    var rows = [];
+    this.state.rows.map(row => {
+      if (ids.includes(+row.id)) {
+        rows.push(row);
+      }
+    });
+    this.updateOrderStatus(rows, getStatusIdByName(type));
+  };
 
   render() {
     const { classes } = this.props;
@@ -172,6 +199,7 @@ class OrdersList extends React.Component {
               allRows={dataUpToStatus(this.state.rows, ["CANCELED"])}
               visibleRows={dataUpToStatusVisible(this.state.rows, ["CANCELED"])}
               activeTab={activeTab}
+              handleOrderStatusChange={this.handleOrderStatusChange}
             />
           )}
           {activeTab === 3 && (
@@ -179,6 +207,7 @@ class OrdersList extends React.Component {
               allRows={dataUpToStatus(this.state.rows, ["ALL"])}
               visibleRows={dataUpToStatusVisible(this.state.rows, ["ALL"])}
               activeTab={activeTab}
+              handleOrderStatusChange={this.handleOrderStatusChange}
             />
           )}
         </main>

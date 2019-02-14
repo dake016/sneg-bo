@@ -7,15 +7,36 @@ import Settings from "../Settings";
 const routes = [
   {
     path: "/orders",
-    sidebarName: "Orders List",
-    navbarName: "Orders List",
+    sidebarName: "Заказы",
+    navbarName: "Заказы",
+    icon: PeopleIcon,
+    component: OrdersList
+  },
+  {
+    path: "/sp",
+    sidebarName: "Прачечные",
+    navbarName: "Прачечные",
+    icon: PeopleIcon,
+    component: OrdersList
+  },
+  {
+    path: "/users",
+    sidebarName: "Пользователи",
+    navbarName: "Пользователи",
+    icon: PeopleIcon,
+    component: OrdersList
+  },
+  {
+    path: "/finance",
+    sidebarName: "Прачечные",
+    navbarName: "Прачечные",
     icon: PeopleIcon,
     component: OrdersList
   },
   {
     path: "/settings",
-    sidebarName: "Settings",
-    navbarName: "Settings",
+    sidebarName: "Настройки",
+    navbarName: "Настройки",
     icon: SettingsIcon,
     component: Settings
   },

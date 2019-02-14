@@ -3,7 +3,8 @@ export default class AuthService {
   // Initializing important variables
   constructor() {
     // this.domain = "http://localhost:8080"; // API server domain
-    this.domain = "http://172.23.19.39:9010";
+    // this.domain = "http://172.23.19.39:9010";
+    this.domain = "http://192.168.0.106:9010";
     this.fetch = this.fetch.bind(this); // React binding stuff
     this.login = this.login.bind(this);
     this.getProfile = this.getProfile.bind(this);
@@ -19,8 +20,7 @@ export default class AuthService {
         password
       })
     }).then(res => {
-      console.log(res);
-      this.setToken(res.token); // Setting the token in localStorage
+      this.setToken(res.content); // Setting the token in localStorage
       return Promise.resolve(res);
     });
   }
@@ -80,7 +80,7 @@ export default class AuthService {
       ...options
     })
       .then(this._checkStatus)
-      .then(response => response.json());
+      .then(this._parseJson);
   }
 
   _checkStatus(response) {
@@ -93,5 +93,11 @@ export default class AuthService {
       error.response = response;
       throw error;
     }
+  }
+
+  _parseJson(response) {
+    return response.text().then(function(text) {
+      return text ? JSON.parse(text) : {};
+    });
   }
 }

@@ -20,8 +20,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import TextField from "@material-ui/core/TextField";
 
 function desc(a, b, orderBy) {
@@ -50,10 +48,22 @@ function getSorting(order, orderBy) {
     : (a, b) => -desc(a, b, orderBy);
 }
 
-function toDateTime(millisecs) {
-  var t = new Date(1970, 0, 1);
-  t.setMilliseconds(millisecs);
-  return t.toLocaleString();
+function toDateTime(date) {
+  var m = new Date(date);
+  var dateString =
+    ("0" + m.getUTCDate()).slice(-2) +
+    "." +
+    ("0" + (m.getUTCMonth() + 1)).slice(-2) +
+    "." +
+    m.getUTCFullYear() +
+    " " +
+    ("0" + m.getUTCHours()).slice(-2) +
+    ":" +
+    ("0" + m.getUTCMinutes()).slice(-2) +
+    ":" +
+    ("0" + m.getUTCSeconds()).slice(-2);
+
+  return dateString;
 }
 
 const rows = [
@@ -61,28 +71,49 @@ const rows = [
     id: "id",
     numeric: false,
     disablePadding: true,
-    label: "Номер заказа"
+    label: "Номер заказа",
+    sortable: true
   },
   {
     id: "registered",
     numeric: true,
     disablePadding: false,
-    label: "Дата регистрации"
+    label: "Дата регистрации",
+    sortable: true
   },
-  { id: "baskets", numeric: true, disablePadding: false, label: "Корзины" },
-  { id: "payment", numeric: true, disablePadding: false, label: "Оплата" },
-  { id: "status", numeric: true, disablePadding: false, label: "Статус" },
+  {
+    id: "baskets",
+    numeric: true,
+    disablePadding: false,
+    label: "Корзины",
+    sortable: false
+  },
+  {
+    id: "payment",
+    numeric: true,
+    disablePadding: false,
+    label: "Оплата",
+    sortable: true
+  },
+  {
+    id: "status",
+    numeric: true,
+    disablePadding: false,
+    label: "Статус",
+    sortable: true
+  },
   {
     id: "note",
     numeric: true,
     disablePadding: false,
-    label: "Комментарий пользователя"
+    label: "Комментарий пользователя",
+    sortable: true
   }
 ];
 
 class EnhancedTableHead extends React.Component {
-  createSortHandler = property => event => {
-    this.props.onRequestSort(event, property);
+  createSortHandler = (property, sortable) => event => {
+    this.props.onRequestSort(event, property, sortable);
   };
 
   render() {
@@ -120,7 +151,7 @@ class EnhancedTableHead extends React.Component {
                   <TableSortLabel
                     active={orderBy === row.id}
                     direction={order}
-                    onClick={this.createSortHandler(row.id)}
+                    onClick={this.createSortHandler(row.id, row.sortable)}
                   >
                     {row.label}
                   </TableSortLabel>
@@ -216,6 +247,14 @@ let EnhancedTableToolbar = props => {
           <React.Fragment>
             <Button
               onClick={event =>
+                handleOrderStatusChange(event, selected, "ACCEPTED")
+              }
+              variant="outlined"
+            >
+              Принят в обработку
+            </Button>
+            <Button
+              onClick={event =>
                 handleOrderStatusChange(event, selected, "COMPLETED")
               }
               className={classes.doneOrderButton}
@@ -254,7 +293,7 @@ class OrderDetails extends React.Component {
   };
   render() {
     const { onClose, selectedRow, ...other } = this.props;
-    return (
+    return selectedRow.id ? (
       <Dialog
         fullWidth={true}
         maxWidth="lg"
@@ -268,9 +307,36 @@ class OrderDetails extends React.Component {
         <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
           <FormControl>
             <FormLabel>Информация пользователя</FormLabel>
-            <FormGroup row>
-              <Typography>{console.log(selectedRow.address)}</Typography>
-            </FormGroup>
+            <div>Имя пользователя</div>
+            <div>{selectedRow.appUser.fullName}</div>
+            <div>Номер телефона</div>
+            <div>{selectedRow.appUser.phoneNumber}</div>
+            <FormLabel>Заказ</FormLabel>
+            {selectedRow.basketList.map(basket => (
+              <div key={basket.id}>
+                {basket.type.description}: {basket.count}
+              </div>
+            ))}
+            <FormLabel>Адрес заказа</FormLabel>
+            <div>
+              {selectedRow.address.value} кв. {selectedRow.address.flat}
+            </div>
+            <FormLabel>Дата забора и доставки</FormLabel>
+            <div>
+              {toDateTime(selectedRow.pickupDate)} -{" "}
+              {toDateTime(selectedRow.returnDate)}
+            </div>
+            <FormLabel>Информация об оплате</FormLabel>
+            <div>{selectedRow.paymentType.description}</div>
+            <FormLabel>Поставщик услуги</FormLabel>
+            <div>Название фирмы</div>
+            <div>{selectedRow.serviceProvider.name}</div>
+            <div>Дата регистрации</div>
+            <div>{toDateTime(selectedRow.serviceProvider.registered)}</div>
+            <FormLabel>Комментарий пользователя</FormLabel>
+            <div>{selectedRow.note}</div>
+            <FormLabel>Статус заказа</FormLabel>
+            <div>{selectedRow.status.description}</div>
           </FormControl>
           <FormGroup row>
             <TextField
@@ -280,7 +346,7 @@ class OrderDetails extends React.Component {
           </FormGroup>
         </Paper>
       </Dialog>
-    );
+    ) : null;
   }
 }
 
@@ -304,7 +370,7 @@ const styles = theme => ({
 
 class OrdersTable extends React.Component {
   state = {
-    order: "asc",
+    order: "desc",
     orderBy: "registered",
     selected: [],
     page: 0,
@@ -313,7 +379,8 @@ class OrdersTable extends React.Component {
     selectedRow: {}
   };
 
-  handleRequestSort = (event, property) => {
+  handleRequestSort = (event, property, sortable) => {
+    if (!sortable) return;
     const orderBy = property;
     let order = "desc";
 
@@ -434,7 +501,13 @@ class OrdersTable extends React.Component {
                       <TableCell align="right">
                         {toDateTime(row.registered)}
                       </TableCell>
-                      <TableCell align="right">{row.basket}</TableCell>
+                      <TableCell align="right">
+                        {row.basket.map(basket => (
+                          <div key={basket.id}>
+                            {basket.type.description}: {basket.count}
+                          </div>
+                        ))}
+                      </TableCell>
                       <TableCell align="right">{row.payment}</TableCell>
                       <TableCell align="right">{row.status}</TableCell>
                       <TableCell align="right">{row.note}</TableCell>

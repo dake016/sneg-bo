@@ -102,14 +102,6 @@ class OrdersList extends React.Component {
   componentDidMount() {
     this.getOrdersList();
     this.getStatuses();
-    this.getAllusers();
-    this.getAllsp();
-  }
-
-  getAllsp() {
-    this.Auth.fetch(`${this.Auth.domain}/sp/all`, { method: "GET" })
-      .then(response => console.log(response.content))
-      .catch(error => alert(error));
   }
 
   getOrdersList() {
@@ -120,7 +112,10 @@ class OrdersList extends React.Component {
 
   getStatuses() {
     this.Auth.fetch(`${this.Auth.domain}/order/statuses`, { method: "GET" })
-      .then(response => (statusList = response.content))
+      .then(response => {
+        statusList = response.content;
+        console.log(response.content);
+      })
       .catch(error => alert("Statuses " + error));
   }
 

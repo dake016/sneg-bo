@@ -103,10 +103,10 @@ const rows = [
     sortable: true
   },
   {
-    id: "city",
+    id: "orders",
     numeric: true,
     disablePadding: false,
-    label: "Город",
+    label: "Количество заказов",
     sortable: true
   }
 ];
@@ -341,7 +341,7 @@ class UsersTable extends React.Component {
 
   handleRowClick = (event, id) => {
     this.props.allRows.map(row =>
-      row.id == id ? this.setState({ selectedRow: row }) : null
+      row.appUser.id == id ? this.setState({ selectedRow: row.appUser }) : null
     );
     this.setState({ modalOpen: true });
   };
@@ -438,8 +438,8 @@ class UsersTable extends React.Component {
                       <TableCell align="right">
                         {row.lastvisit ? toDateTime(row.lastvisit) : "-"}
                       </TableCell>
-                      <TableCell align="right">
-                        {row.city ? row.city : "-"}
+                      <TableCell align="center">
+                        {row.orders ? row.orders : 0}
                       </TableCell>
                     </TableRow>
                   );

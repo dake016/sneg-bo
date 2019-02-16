@@ -39,12 +39,12 @@ function visibleData(data) {
   var newData = [];
   data.map(row => {
     newData.push({
-      id: row.id,
-      phone: row.phoneNumber,
-      name: row.fullName,
-      registered: row.registered,
-      lastvisit: row.lastVisit,
-      city: row.city
+      id: row.appUser.id,
+      phone: row.appUser.phoneNumber,
+      name: row.appUser.fullName,
+      registered: row.appUser.registered,
+      lastvisit: row.appUser.lastVisit,
+      orders: row.count
     });
   });
   return newData;
@@ -58,12 +58,9 @@ class Users extends React.Component {
   Auth = new AuthService();
 
   componentDidMount() {
-    this.Auth.fetch(`${this.Auth.domain}/user/all`, { method: "GET" })
+    this.Auth.fetch(`${this.Auth.domain}/user/orders`, { method: "GET" })
       .then(response => this.setState({ rows: response.content }))
       .catch(error => alert("user all " + error));
-    this.Auth.fetch(`${this.Auth.domain}/user/orders`, { method: "GET" })
-      .then(response => console.log(response.content))
-      .catch(error => alert("user orders  " + error));
   }
 
   render() {

@@ -190,6 +190,10 @@ const toolbarStyles = theme => ({
     borderWidth: 2,
     borderColor: "#f44336",
     margin: "10px 20px 0"
+  },
+  addLaundry: {
+    marginRight: theme.spacing.unit,
+    margin: "10px 20px 0"
   }
 });
 
@@ -209,13 +213,23 @@ let EnhancedTableToolbar = props => {
           </Typography>
         ) : (
           <Typography variant="h6" id="tableTitle">
-            Провайдеры
+            Прачечные
           </Typography>
         )}
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 && <React.Fragment />}
+        {numSelected > 0 ? (
+          <div />
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.addLaundry}
+          >
+            Добавить прачечную
+          </Button>
+        )}
       </div>
     </Toolbar>
   );
@@ -243,7 +257,7 @@ class Details extends React.Component {
         {...other}
       >
         <DialogTitle id="simple-dialog-title">
-          Провайдер №{selectedRow.id}
+          Прачечная №{selectedRow.id}
         </DialogTitle>
         <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
           <FormControl>

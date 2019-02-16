@@ -17,9 +17,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
-import FormGroup from "@material-ui/core/FormGroup";
 import TextField from "@material-ui/core/TextField";
 
 function desc(a, b, orderBy) {
@@ -287,12 +284,78 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
+const orderDetailsStyle = theme => ({
+  spacer: {
+    flex: "1 1 auto"
+  },
+  orderID: {
+    flex: "0 0 auto",
+    padding: "2px 6px"
+  },
+  status: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #ff963b",
+    backgroundColor: "#ff963b",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  statusCompleted: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #388e3c",
+    backgroundColor: "#388e3c",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  statusCanceled: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #f44336",
+    backgroundColor: "#f44336",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  header: {
+    display: "flex",
+    overflow: "auto"
+  },
+  paper: {
+    margin: "0 20px 20px",
+    padding: "20px",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+  },
+  groupLabel: {
+    fontSize: "120%",
+    marginBottom: "8px",
+    color: "#00608e"
+  },
+  row: {
+    display: "flex",
+    marginBottom: "32px"
+  },
+  column: {
+    width: "25%"
+  },
+
+  label: {
+    color: "#848484",
+    fontSize: "80%",
+    marginBottom: "4px",
+    fontWeight: "bold"
+  },
+  textField: {
+    width: "40%",
+    marginRight: "5px"
+  }
+});
+
 class OrderDetails extends React.Component {
   handleClose = () => {
     this.props.onClose();
   };
   render() {
-    const { onClose, selectedRow, ...other } = this.props;
+    const { onClose, selectedRow, classes, ...other } = this.props;
     return selectedRow.id ? (
       <Dialog
         fullWidth={true}
@@ -301,53 +364,170 @@ class OrderDetails extends React.Component {
         aria-labelledby="simple-dialog-title"
         {...other}
       >
+        {console.log(selectedRow)}
         <DialogTitle id="simple-dialog-title">
-          Заказ номер №{selectedRow.id}
-        </DialogTitle>
-        <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
-          <FormControl>
-            <FormLabel>Информация пользователя</FormLabel>
-            <div>Имя пользователя</div>
-            <div>
-              {selectedRow.appUser.fullName
-                ? selectedRow.appUser.fullName
-                : "-"}
+          <div className={classes.header}>
+            <div className={classes.orderID}>
+              Заказ номер №{selectedRow.id} от{" "}
+              {toDateTime(selectedRow.registered)}
             </div>
-            <div>Номер телефона</div>
-            <div>{selectedRow.appUser.phoneNumber}</div>
-            <FormLabel>Заказ</FormLabel>
+            <div className={classes.spacer} />
+            {selectedRow.status.name == "COMPLETED" && (
+              <div className={classes.statusCompleted}>
+                {selectedRow.status.description}
+              </div>
+            )}
+            {selectedRow.status.name == "CANCELED" && (
+              <div className={classes.statusCanceled}>
+                {selectedRow.status.description}
+              </div>
+            )}
+            {(selectedRow.status.name == "ACCEPTED" ||
+              selectedRow.status.name == "PICKUP" ||
+              selectedRow.status.name == "PROCESSING" ||
+              selectedRow.status.name == "RETURN" ||
+              selectedRow.status.name == "DISPUTE") && (
+              <div className={classes.status}>
+                {selectedRow.status.description}
+              </div>
+            )}
+          </div>
+        </DialogTitle>
+        <Paper className={classes.paper}>
+          <div className={classes.groupLabel}>Информация пользователя</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Имя пользователя</div>
+              <div className={classes.value}>
+                {selectedRow.appUser.fullName
+                  ? selectedRow.appUser.fullName
+                  : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Номер телефона</div>
+              <div className={classes.value}>
+                {selectedRow.appUser.phoneNumber}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Заказ</div>
+          <div className={classes.row}>
             {selectedRow.basketList.map(basket => (
-              <div key={basket.id}>
-                {basket.type.description}: {basket.count}
+              <div key={basket.id} className={classes.column}>
+                <div className={classes.label}>{basket.type.description}</div>
+                <div className={classes.value}>Кол-во: {basket.count}</div>
               </div>
             ))}
-            <FormLabel>Адрес заказа</FormLabel>
-            <div>
-              {selectedRow.address.value} кв. {selectedRow.address.flat}
+            <div className={classes.column}>
+              <div className={classes.label}>Комментарий пользователя</div>
+              <div className={classes.value}>
+                {selectedRow.note ? selectedRow.note : "-"}
+              </div>
             </div>
-            <FormLabel>Дата забора и доставки</FormLabel>
-            <div>
-              {toDateTime(selectedRow.pickupDate)} -{" "}
-              {toDateTime(selectedRow.returnDate)}
+          </div>
+
+          <div className={classes.groupLabel}>Адрес заказа</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Улица</div>
+              <div className={classes.value}>
+                {selectedRow.address.value ? selectedRow.address.value : "-"}
+              </div>
             </div>
-            <FormLabel>Информация об оплате</FormLabel>
-            <div>{selectedRow.paymentType.description}</div>
-            <FormLabel>Поставщик услуги</FormLabel>
-            <div>Название фирмы</div>
-            <div>{selectedRow.serviceProvider.name}</div>
-            <div>Дата регистрации</div>
-            <div>{toDateTime(selectedRow.serviceProvider.registered)}</div>
-            <FormLabel>Комментарий пользователя</FormLabel>
-            <div>{selectedRow.note ? selectedRow.note : "-"}</div>
-            <FormLabel>Статус заказа</FormLabel>
-            <div>{selectedRow.status.description}</div>
-          </FormControl>
-          <FormGroup row>
-            <TextField
-              placeholder="Добавьте ваш комментарий"
-              label="Комментарий к заказу"
-            />
-          </FormGroup>
+            <div className={classes.column}>
+              <div className={classes.label}>Квартира</div>
+              <div className={classes.value}>
+                {selectedRow.address.flat ? selectedRow.address.flat : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Подъезд</div>
+              <div className={classes.value}>
+                {selectedRow.address.entrance
+                  ? selectedRow.address.entrance
+                  : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Этаж</div>
+              <div className={classes.value}>
+                {selectedRow.address.floor ? selectedRow.address.floor : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Коментарий</div>
+              <div className={classes.value}>
+                {selectedRow.address.note ? selectedRow.address.note : "-"}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Дата забора и доставки</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Время забора</div>
+              <div className={classes.value}>
+                {toDateTime(selectedRow.pickupDate)}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Время доставки</div>
+              <div className={classes.value}>
+                {toDateTime(selectedRow.returnDate)}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Информация об оплате</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Тип оплаты</div>
+              <div className={classes.value}>
+                {selectedRow.paymentType.description}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Оплачено</div>
+              <div className={classes.value}>
+                {selectedRow.paid ? "Да" : "Нет"}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Поставщик услуги</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Название фирмы</div>
+              <div className={classes.value}>
+                {selectedRow.serviceProvider.name}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Дата регистрации</div>
+              <div className={classes.value}>
+                {toDateTime(selectedRow.serviceProvider.registered)}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Ваш комментарий к заказу</div>
+          <div className={classes.row}>
+            <div className={classes.textField}>
+              <TextField
+                id="spNote"
+                fullWidth
+                defaultValue={selectedRow.spNote}
+                padding="5px"
+              />
+            </div>
+            <div className={classes.column}>
+              <Button variant="contained" color="primary">
+                Отправить
+              </Button>
+            </div>
+          </div>
         </Paper>
       </Dialog>
     ) : null;
@@ -355,9 +535,12 @@ class OrderDetails extends React.Component {
 }
 
 OrderDetails.propTypes = {
+  classes: PropTypes.object.isRequired,
   onClose: PropTypes.func,
   selectedRow: PropTypes.object.isRequired
 };
+
+OrderDetails = withStyles(orderDetailsStyle)(OrderDetails);
 
 const styles = theme => ({
   root: {
@@ -514,7 +697,9 @@ class OrdersTable extends React.Component {
                       </TableCell>
                       <TableCell align="right">{row.payment}</TableCell>
                       <TableCell align="right">{row.status}</TableCell>
-                      <TableCell align="right">{row.note}</TableCell>
+                      <TableCell align="right">
+                        {row.note ? row.note : "-"}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

@@ -39,9 +39,10 @@ function visibleData(data) {
   var newData = [];
   data.map(row => {
     newData.push({
-      id: row.id,
-      name: row.name,
-      registered: row.registered
+      id: row.serviceProvider.id,
+      name: row.serviceProvider.name,
+      active: row.serviceProvider.active,
+      orders: row.count
     });
   });
   return newData;
@@ -55,8 +56,11 @@ class Providers extends React.Component {
   Auth = new AuthService();
 
   componentDidMount() {
-    this.Auth.fetch(`${this.Auth.domain}/sp/all`, { method: "GET" })
-      .then(response => this.setState({ rows: response.content }))
+    this.Auth.fetch(`${this.Auth.domain}/sp/orders`, { method: "GET" })
+      .then(response => {
+        console.log(response.content);
+        this.setState({ rows: response.content });
+      })
       .catch(error => alert("SP " + error));
   }
 

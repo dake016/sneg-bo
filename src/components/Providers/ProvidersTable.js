@@ -17,10 +17,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
-import FormGroup from "@material-ui/core/FormGroup";
-import TextField from "@material-ui/core/TextField";
+import AuthService from "../Auth/AuthService";
+import withAuth from "../Auth/withAuth";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -82,10 +80,17 @@ const rows = [
     sortable: true
   },
   {
-    id: "registered",
+    id: "active",
     numeric: true,
     disablePadding: false,
-    label: "Дата регистрации",
+    label: "Статус",
+    sortable: true
+  },
+  {
+    id: "orders",
+    numeric: true,
+    disablePadding: false,
+    label: "Количество заказов",
     sortable: true
   }
 ];
@@ -173,24 +178,6 @@ const toolbarStyles = theme => ({
   title: {
     flex: "0 0 auto"
   },
-  doneOrderButton: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#388e3c",
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#388e3c",
-    margin: "10px 20px 0"
-  },
-  cancelOrderButton: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#f44336",
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#f44336",
-    margin: "10px 20px 0"
-  },
   addLaundry: {
     marginRight: theme.spacing.unit,
     margin: "10px 20px 0"
@@ -242,29 +229,161 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
+const detailsStyle = theme => ({
+  spacer: {
+    flex: "1 1 auto"
+  },
+  orderID: {
+    flex: "0 0 auto",
+    padding: "2px 6px"
+  },
+  status: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #ff963b",
+    backgroundColor: "#ff963b",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  statusCompleted: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #388e3c",
+    backgroundColor: "#388e3c",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  statusCanceled: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #f44336",
+    backgroundColor: "#f44336",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  header: {
+    display: "flex",
+    overflow: "auto"
+  },
+  paper: {
+    margin: "0 20px 20px",
+    padding: "20px",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+  },
+  groupLabel: {
+    fontSize: "120%",
+    marginBottom: "8px",
+    color: "#00608e"
+  },
+  row: {
+    display: "flex",
+    marginBottom: "32px"
+  },
+  column: {
+    width: "25%"
+  },
+
+  label: {
+    color: "#848484",
+    fontSize: "80%",
+    marginBottom: "4px",
+    fontWeight: "bold"
+  },
+  textField: {
+    width: "40%",
+    marginRight: "5px"
+  },
+  active: {
+    color: "#4caf50",
+    fontWeight: 700
+  },
+  notactive: {
+    color: "#f44336",
+    fontWeight: 700
+  }
+});
+
 class Details extends React.Component {
+  state = {
+    orders: []
+  };
+
+  Auth = new AuthService();
+
   handleClose = () => {
     this.props.onClose();
   };
+
+  getOrders = () => {
+    this.Auth.fetch(
+      `${this.Auth.domain}/sp/${this.props.selectedRow.id}/orders`,
+      { method: "GET" }
+    )
+      .then(response => this.setState({ orders: response.content }))
+      .catch(error => alert("SP orders " + error));
+  };
+
   render() {
-    const { onClose, selectedRow, ...other } = this.props;
+    const { onClose, selectedRow, classes, ...other } = this.props;
     return selectedRow.id ? (
       <Dialog
         fullWidth={true}
         maxWidth="lg"
         onClose={this.handleClose}
+        onEnter={this.getOrders}
         aria-labelledby="simple-dialog-title"
         {...other}
       >
         <DialogTitle id="simple-dialog-title">
           Прачечная №{selectedRow.id}
         </DialogTitle>
-        <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
-          <FormControl>
-            <FormLabel>Информация провайдера</FormLabel>
-            <div>Имя пользователя</div>
-            <div>{selectedRow.name ? selectedRow.name : "-"}</div>
-          </FormControl>
+        <Paper className={classes.paper}>
+          <div className={classes.groupLabel}>Информация о прачечной</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Название</div>
+              <div className={classes.value}>
+                {selectedRow.name ? selectedRow.name : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Дата регистрации</div>
+              <div className={classes.value}>
+                {toDateTime(selectedRow.registered)}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Адрес прачечной</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Улица</div>
+              <div className={classes.value}>
+                {selectedRow.address.value ? selectedRow.address.value : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Коментарий</div>
+              <div className={classes.value}>
+                {selectedRow.address.note ? selectedRow.address.note : "-"}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Статус</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.value}>
+                <div
+                  className={
+                    selectedRow.active ? classes.active : classes.notactive
+                  }
+                >
+                  {selectedRow.active ? "Активен" : "Не активен"}
+                </div>
+              </div>
+            </div>
+          </div>
         </Paper>
       </Dialog>
     ) : null;
@@ -272,9 +391,11 @@ class Details extends React.Component {
 }
 
 Details.propTypes = {
+  classes: PropTypes.object.isRequired,
   onClose: PropTypes.func,
   selectedRow: PropTypes.object.isRequired
 };
+Details = withAuth(withStyles(detailsStyle)(Details));
 
 const styles = theme => ({
   root: {
@@ -286,6 +407,14 @@ const styles = theme => ({
   },
   tableWrapper: {
     overflowX: "auto"
+  },
+  active: {
+    color: "#4caf50",
+    fontWeight: 700
+  },
+  notactive: {
+    color: "#f44336",
+    fontWeight: 700
   }
 });
 
@@ -332,7 +461,9 @@ class ProvidersTable extends React.Component {
 
   handleRowClick = (event, id) => {
     this.props.allRows.map(row =>
-      row.id == id ? this.setState({ selectedRow: row }) : null
+      row.serviceProvider.id == id
+        ? this.setState({ selectedRow: row.serviceProvider })
+        : null
     );
     this.setState({ modalOpen: true });
   };
@@ -420,15 +551,21 @@ class ProvidersTable extends React.Component {
                       <TableCell align="right">
                         {row.name ? row.name : "-"}
                       </TableCell>
-                      <TableCell align="right">
-                        {row.registered ? toDateTime(row.registered) : "-"}
+                      <TableCell
+                        align="right"
+                        className={
+                          row.active ? classes.active : classes.notactive
+                        }
+                      >
+                        {row.active ? "Активен" : "Не активен"}
                       </TableCell>
+                      <TableCell align="right">{row.orders}</TableCell>
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={4} />
+                  <TableCell colSpan={5} />
                 </TableRow>
               )}
             </TableBody>

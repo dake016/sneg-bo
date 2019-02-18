@@ -59,7 +59,10 @@ class Users extends React.Component {
 
   componentDidMount() {
     this.Auth.fetch(`${this.Auth.domain}/user/orders`, { method: "GET" })
-      .then(response => this.setState({ rows: response.content }))
+      .then(response => {
+        console.log(response.content);
+        this.setState({ rows: response.content });
+      })
       .catch(error => alert("user all " + error));
   }
 

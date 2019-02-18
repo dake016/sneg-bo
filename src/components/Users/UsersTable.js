@@ -249,12 +249,86 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
+const detailsStyle = theme => ({
+  spacer: {
+    flex: "1 1 auto"
+  },
+  orderID: {
+    flex: "0 0 auto",
+    padding: "2px 6px"
+  },
+  status: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #ff963b",
+    backgroundColor: "#ff963b",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  statusCompleted: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #388e3c",
+    backgroundColor: "#388e3c",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  statusCanceled: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #f44336",
+    backgroundColor: "#f44336",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  header: {
+    display: "flex",
+    overflow: "auto"
+  },
+  paper: {
+    margin: "0 20px 20px",
+    padding: "20px",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+  },
+  groupLabel: {
+    fontSize: "120%",
+    marginBottom: "8px",
+    color: "#00608e"
+  },
+  row: {
+    display: "flex",
+    marginBottom: "32px"
+  },
+  column: {
+    width: "25%"
+  },
+
+  label: {
+    color: "#848484",
+    fontSize: "80%",
+    marginBottom: "4px",
+    fontWeight: "bold"
+  },
+  textField: {
+    width: "40%",
+    marginRight: "5px"
+  },
+  active: {
+    color: "#4caf50",
+    fontWeight: 700
+  },
+  notactive: {
+    color: "#f44336",
+    fontWeight: 700
+  }
+});
+
 class Details extends React.Component {
   handleClose = () => {
     this.props.onClose();
   };
   render() {
-    const { onClose, selectedRow, ...other } = this.props;
+    const { onClose, selectedRow, classes, ...other } = this.props;
     return selectedRow.id ? (
       <Dialog
         fullWidth={true}
@@ -266,14 +340,89 @@ class Details extends React.Component {
         <DialogTitle id="simple-dialog-title">
           Пользователь №{selectedRow.id}
         </DialogTitle>
-        <Paper style={{ margin: "0 20px 20px", padding: "20px" }}>
-          <FormControl>
-            <FormLabel>Информация пользователя</FormLabel>
-            <div>Имя пользователя</div>
-            <div>{selectedRow.fullName ? selectedRow.fullName : "-"}</div>
-            <div>Номер телефона</div>
-            <div>{selectedRow.phoneNumber}</div>
-          </FormControl>
+        <Paper className={classes.paper}>
+          <div className={classes.groupLabel}>Информация о пользователе</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Номер телефона</div>
+              <div className={classes.value}>
+                {selectedRow.phoneNumber ? selectedRow.phoneNumber : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Имя</div>
+              <div className={classes.value}>
+                {selectedRow.fullName ? selectedRow.fullName : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Город</div>
+              <div className={classes.value}>
+                {selectedRow.city ? selectedRow.city : "-"}
+              </div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Дата регистрации</div>
+              <div className={classes.value}>
+                {selectedRow.registered
+                  ? toDateTime(selectedRow.registered)
+                  : "-"}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Дополнительная информация</div>
+          <div className={classes.row}>
+            <div className={classes.column}>
+              <div className={classes.label}>Бонусы</div>
+              <div className={classes.value}>{selectedRow.bonus}</div>
+            </div>
+            <div className={classes.column}>
+              <div className={classes.label}>Последний визит</div>
+              <div className={classes.value}>
+                {selectedRow.lastVisit
+                  ? toDateTime(selectedRow.lastVisit)
+                  : "-"}
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.groupLabel}>Адреса пользователя</div>
+
+          {selectedRow.addressList.map(address => (
+            <div key={address.id} className={classes.row}>
+              <div className={classes.column}>
+                <div className={classes.label}>Улица</div>
+                <div className={classes.value}>
+                  {address.value ? address.value : "-"}
+                </div>
+              </div>
+              <div className={classes.column}>
+                <div className={classes.label}>Квартира</div>
+                <div className={classes.value}>
+                  {address.flat ? address.flat : "-"}
+                </div>
+              </div>
+              <div className={classes.column}>
+                <div className={classes.label}>Подъезд</div>
+                <div className={classes.value}>
+                  {address.entrance ? address.entrance : "-"}
+                </div>
+              </div>
+              <div className={classes.column}>
+                <div className={classes.label}>Этаж</div>
+                <div className={classes.value}>
+                  {address.floor ? address.floor : "-"}
+                </div>
+              </div>
+              <div className={classes.column}>
+                <div className={classes.label}>Коментарий</div>
+                <div className={classes.value}>
+                  {address.note ? address.note : "-"}
+                </div>
+              </div>
+            </div>
+          ))}
         </Paper>
       </Dialog>
     ) : null;
@@ -281,9 +430,12 @@ class Details extends React.Component {
 }
 
 Details.propTypes = {
+  classes: PropTypes.object.isRequired,
   onClose: PropTypes.func,
   selectedRow: PropTypes.object.isRequired
 };
+
+Details = withStyles(detailsStyle)(Details);
 
 const styles = theme => ({
   root: {
@@ -438,7 +590,7 @@ class UsersTable extends React.Component {
                       <TableCell align="right">
                         {row.lastvisit ? toDateTime(row.lastvisit) : "-"}
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="right">
                         {row.orders ? row.orders : 0}
                       </TableCell>
                     </TableRow>

@@ -18,6 +18,9 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -72,10 +75,10 @@ const rows = [
     sortable: true
   },
   {
-    id: "registered",
+    id: "pickup",
     numeric: true,
     disablePadding: false,
-    label: "Дата регистрации",
+    label: "Дата забора",
     sortable: true
   },
   {
@@ -191,16 +194,17 @@ const toolbarStyles = theme => ({
   title: {
     flex: "0 0 auto"
   },
-  doneOrderButton: {
+  statusButton: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#388e3c",
+    color: "#009be5",
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: "#388e3c",
+    borderColor: "#009be5",
     margin: "10px 20px 0"
   },
-  cancelOrderButton: {
+
+  cancelButton: {
     fontSize: 14,
     fontWeight: "700",
     color: "#f44336",
@@ -208,74 +212,135 @@ const toolbarStyles = theme => ({
     borderWidth: 2,
     borderColor: "#f44336",
     margin: "10px 20px 0"
+  },
+  formControl: {
+    margin: "10px 20px 0"
+  },
+  statusSelect: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#009be5",
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#009be5"
   }
 });
+class EnhancedTableToolbar extends React.Component {
+  handleSelectChange = event => {
+    if (event.target.value) {
+      this.props.handleOrderStatusChange(
+        event,
+        this.props.selected,
+        event.target.value
+      );
+      this.props.handleUncheck();
+    }
+  };
 
-let EnhancedTableToolbar = props => {
-  const {
-    selected,
-    numSelected,
-    classes,
-    handleOrderStatusChange,
-    activeTab
-  } = props;
+  handleOrderStatusChange = (event, type) => {
+    this.props.handleOrderStatusChange(event, this.props.selected, type);
+    this.props.handleUncheck();
+  };
 
-  return (
-    <Toolbar
-      className={classNames(classes.root, {
-        [classes.highlight]: numSelected > 0
-      })}
-    >
-      <div className={classes.title}>
-        {numSelected > 0 ? (
-          <Typography color="inherit" variant="subtitle1">
-            Выбрано {numSelected}
-          </Typography>
-        ) : (
-          <Typography variant="h6" id="tableTitle">
-            Заказы
-          </Typography>
-        )}
-      </div>
-      <div className={classes.spacer} />
-      <div className={classes.actions}>
-        {numSelected > 0 && (
-          // activeTab == 0 ?
-          <React.Fragment>
+  render() {
+    const { numSelected, classes, activeTab } = this.props;
+
+    return (
+      <Toolbar
+        className={classNames(classes.root, {
+          [classes.highlight]: numSelected > 0
+        })}
+      >
+        <div className={classes.title}>
+          {numSelected > 0 ? (
+            <Typography color="inherit" variant="subtitle1">
+              Выбрано {numSelected}
+            </Typography>
+          ) : (
+            <Typography variant="h6" id="tableTitle">
+              Заказы
+            </Typography>
+          )}
+        </div>
+        <div className={classes.spacer} />
+        <div className={classes.actions}>
+          {numSelected > 0 && activeTab == 0 && (
+            <React.Fragment>
+              <Button
+                onClick={event => this.handleOrderStatusChange(event, "PICKUP")}
+                className={classes.statusButton}
+                variant="outlined"
+              >
+                Ожидание курьера на забор заказа
+              </Button>
+              <Button
+                onClick={event =>
+                  this.handleOrderStatusChange(event, "CANCELED")
+                }
+                className={classes.cancelButton}
+                variant="outlined"
+              >
+                Отменить заказ
+              </Button>
+            </React.Fragment>
+          )}
+          {numSelected > 0 && activeTab == 1 && (
             <Button
               onClick={event =>
-                handleOrderStatusChange(event, selected, "ACCEPTED")
+                this.handleOrderStatusChange(event, "PROCESSING")
               }
+              className={classes.statusButton}
               variant="outlined"
             >
-              Принят в обработку
+              Стирается
             </Button>
+          )}
+          {numSelected > 0 && activeTab == 2 && (
+            <Button
+              onClick={event => this.handleOrderStatusChange(event, "RETURN")}
+              className={classes.statusButton}
+              variant="outlined"
+            >
+              Доставка курьером заказ
+            </Button>
+          )}
+          {numSelected > 0 && (activeTab == 3 || activeTab == 6) && (
             <Button
               onClick={event =>
-                handleOrderStatusChange(event, selected, "COMPLETED")
+                this.handleOrderStatusChange(event, "COMPLETED")
               }
-              className={classes.doneOrderButton}
+              className={classes.statusButton}
               variant="outlined"
             >
-              Выполнить заказ(ы)
+              Заказ выполнен
             </Button>
-            <Button
-              onClick={event =>
-                handleOrderStatusChange(event, selected, "CANCELED")
-              }
-              className={classes.cancelOrderButton}
-              variant="outlined"
-            >
-              Отменить заказ(ы)
-            </Button>
-          </React.Fragment>
-        )
-        // : null
-        }
-      </div>
-    </Toolbar>
-  );
-};
+          )}
+          {numSelected > 0 && activeTab == 7 && (
+            <FormControl className={classes.formControl}>
+              <Select
+                value=""
+                displayEmpty
+                onChange={this.handleSelectChange}
+                className={classes.statusSelect}
+              >
+                <MenuItem value="">
+                  <em>Выбирите статус</em>
+                </MenuItem>
+                <MenuItem value={"ACCEPTED"}>Принят в обработку</MenuItem>
+                <MenuItem value={"PICKUP"}>Ожидание забора курьера</MenuItem>
+                <MenuItem value={"PROCESSING"}>Стирается</MenuItem>
+                <MenuItem value={"RETURN"}>Ожидание доставки</MenuItem>
+                <MenuItem value={"COMPLETED"}>Выполнен</MenuItem>
+                <MenuItem value={"CANCELED"}>Отменен</MenuItem>
+                <MenuItem value={"DISPUTE"}>Диспут</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+        </div>
+      </Toolbar>
+    );
+  }
+}
 
 EnhancedTableToolbar.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -364,7 +429,6 @@ class OrderDetails extends React.Component {
         aria-labelledby="simple-dialog-title"
         {...other}
       >
-        {console.log(selectedRow)}
         <DialogTitle id="simple-dialog-title">
           <div className={classes.header}>
             <div className={classes.orderID}>
@@ -552,13 +616,25 @@ const styles = theme => ({
   },
   tableWrapper: {
     overflowX: "auto"
+  },
+  status: {
+    color: "#ffffff",
+    fontWeight: "bold",
+    border: "2px solid #009be5",
+    backgroundColor: "#009be5",
+    borderRadius: 16,
+    padding: "2px 16px"
+  },
+  tableRow: {
+    color: "#f50057",
+    fontWeight: "bold"
   }
 });
 
 class OrdersTable extends React.Component {
   state = {
-    order: "desc",
-    orderBy: "registered",
+    order: "asc",
+    orderBy: "pickup",
     selected: [],
     page: 0,
     rowsPerPage: 5,
@@ -603,6 +679,12 @@ class OrdersTable extends React.Component {
     this.setState({ modalOpen: true });
   };
 
+  getAllRowByID = id => {
+    var newRow = {};
+    this.props.allRows.map(row => (row.id == id ? (newRow = row) : null));
+    return newRow;
+  };
+
   handleModalClose = () => {
     this.setState({ modalOpen: false });
   };
@@ -629,6 +711,18 @@ class OrdersTable extends React.Component {
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
+  handleUncheck = () => {
+    this.setState({ selected: [] });
+  };
+
+  checkExpired = id => {
+    var row = this.getAllRowByID(id);
+    var pickupDate = new Date(Date.parse(row.pickupDate));
+    var now = new Date(Date.now());
+    now.setHours(now.getHours() + 2);
+    return now >= pickupDate ? true : false;
+  };
+
   render() {
     const { classes } = this.props;
     const data = this.props.visibleRows;
@@ -648,6 +742,7 @@ class OrdersTable extends React.Component {
           numSelected={selected.length}
           activeTab={this.props.activeTab}
           handleOrderStatusChange={this.props.handleOrderStatusChange}
+          handleUncheck={this.handleUncheck}
         />
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
@@ -685,8 +780,13 @@ class OrdersTable extends React.Component {
                       <TableCell component="th" scope="row" padding="none">
                         {row.id}
                       </TableCell>
-                      <TableCell align="right">
-                        {toDateTime(row.registered)}
+                      <TableCell
+                        align="right"
+                        className={
+                          this.checkExpired(row.id) ? classes.tableRow : null
+                        }
+                      >
+                        {toDateTime(row.pickup)}
                       </TableCell>
                       <TableCell align="right">
                         {row.basket.map(basket => (
@@ -696,7 +796,9 @@ class OrdersTable extends React.Component {
                         ))}
                       </TableCell>
                       <TableCell align="right">{row.payment}</TableCell>
-                      <TableCell align="right">{row.status}</TableCell>
+                      <TableCell align="right">
+                        <span className={classes.status}>{row.status}</span>
+                      </TableCell>
                       <TableCell align="right">
                         {row.note ? row.note : "-"}
                       </TableCell>

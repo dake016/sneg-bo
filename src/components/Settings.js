@@ -49,13 +49,13 @@ function Content(props) {
         >
           <Toolbar>
             <Grid container spacing={16} alignItems="center">
-              <Typography color="inherit">Mara master prostaty</Typography>
+              <Typography color="inherit" />
             </Grid>
           </Toolbar>
         </AppBar>
         <div className={classes.contentWrapper}>
           <Typography color="textSecondary" align="center">
-            No users for this project yet
+            Blank
           </Typography>
         </div>
       </Paper>

@@ -84,7 +84,9 @@ function dataUpToStatusVisible(data, status) {
     if (status.includes(row.status.name) || status[0] == "ALL") {
       newData.push({
         id: row.id,
+        registered: row.registered,
         pickup: row.pickupDate,
+        phone: row.appUser.phoneNumber,
         basket: row.basketList,
         payment: row.paymentType.description,
         status: row.status.description,
@@ -127,7 +129,6 @@ class OrdersList extends React.Component {
           this.setState({ newOrdersCount: response.content.length });
         })
         .catch(error => alert("Auto orders" + error));
-      console.log(this.state.newOrdersCount);
     }, 5000);
   }
 

@@ -75,30 +75,44 @@ const rows = [
     sortable: true
   },
   {
+    id: "registered",
+    numeric: true,
+    disablePadding: true,
+    label: "Дата регистрации",
+    sortable: true
+  },
+  {
     id: "pickup",
     numeric: true,
-    disablePadding: false,
-    label: "Дата забора",
+    disablePadding: true,
+    label: "Дата вывоза",
+    sortable: true
+  },
+  {
+    id: "phone",
+    numeric: true,
+    disablePadding: true,
+    label: "Номер телефона",
     sortable: true
   },
   {
     id: "baskets",
     numeric: true,
-    disablePadding: false,
+    disablePadding: true,
     label: "Корзины",
     sortable: false
   },
   {
     id: "payment",
     numeric: true,
-    disablePadding: false,
+    disablePadding: true,
     label: "Оплата",
     sortable: true
   },
   {
     id: "status",
     numeric: true,
-    disablePadding: false,
+    disablePadding: true,
     label: "Статус",
     sortable: true
   },
@@ -271,7 +285,7 @@ class EnhancedTableToolbar extends React.Component {
                 className={classes.statusButton}
                 variant="outlined"
               >
-                Ожидание курьера на забор заказа
+                Ожидание курьера на вывоз заказа
               </Button>
               <Button
                 onClick={event =>
@@ -327,9 +341,9 @@ class EnhancedTableToolbar extends React.Component {
                   <em>Выбирите статус</em>
                 </MenuItem>
                 <MenuItem value={"ACCEPTED"}>Принят в обработку</MenuItem>
-                <MenuItem value={"PICKUP"}>Ожидание забора курьера</MenuItem>
+                <MenuItem value={"PICKUP"}>Ожидание вывоза курьером</MenuItem>
                 <MenuItem value={"PROCESSING"}>Стирается</MenuItem>
-                <MenuItem value={"RETURN"}>Ожидание доставки</MenuItem>
+                <MenuItem value={"RETURN"}>Ожидание доставки курьером</MenuItem>
                 <MenuItem value={"COMPLETED"}>Выполнен</MenuItem>
                 <MenuItem value={"CANCELED"}>Отменен</MenuItem>
                 <MenuItem value={"DISPUTE"}>Диспут</MenuItem>
@@ -528,7 +542,7 @@ class OrderDetails extends React.Component {
             </div>
           </div>
 
-          <div className={classes.groupLabel}>Дата забора и доставки</div>
+          <div className={classes.groupLabel}>Дата вывоза и доставки</div>
           <div className={classes.row}>
             <div className={classes.column}>
               <div className={classes.label}>Время забора</div>
@@ -626,18 +640,19 @@ const styles = theme => ({
     padding: "2px 16px"
   },
   tableRow: {
-    color: "#f50057",
-    fontWeight: "bold"
+    // color: "#f50057",
+    // fontWeight: "bold",
+    fontSize:"11px"
   }
 });
 
 class OrdersTable extends React.Component {
   state = {
     order: "asc",
-    orderBy: "pickup",
+    orderBy: "registered",
     selected: [],
     page: 0,
-    rowsPerPage: 5,
+    rowsPerPage: 10,
     modalOpen: false,
     selectedRow: {}
   };
@@ -769,7 +784,8 @@ class OrdersTable extends React.Component {
                       key={row.id}
                       selected={isSelected}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell padding="checkbox"
+                      className={classes.tableRow}>
                         <Checkbox
                           checked={isSelected}
                           onClick={event =>
@@ -777,29 +793,50 @@ class OrdersTable extends React.Component {
                           }
                         />
                       </TableCell>
-                      <TableCell component="th" scope="row" padding="none">
+                      <TableCell component="th" scope="row" padding="none"
+                      className={classes.tableRow}>
                         {row.id}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        className={classes.tableRow}
+                        padding="none"
+                      >
+                        {toDateTime(row.registered)}
                       </TableCell>
                       <TableCell
                         align="right"
                         className={
                           this.checkExpired(row.id) ? classes.tableRow : null
                         }
+                        padding="none"
                       >
                         {toDateTime(row.pickup)}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell
+                        align="right"
+                        className={classes.tableRow}
+                        padding="none"
+                      >
+                        {row.phone}
+                      </TableCell>
+                      <TableCell align="right" 
+                      className={classes.tableRow}
+                      padding="none">
                         {row.basket.map(basket => (
                           <div key={basket.id}>
                             {basket.type.description}: {basket.count}
                           </div>
                         ))}
                       </TableCell>
-                      <TableCell align="right">{row.payment}</TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" padding="none"
+                      className={classes.tableRow}>{row.payment}</TableCell>
+                      <TableCell align="right" padding="none"
+                      className={classes.tableRow}>
                         <span className={classes.status}>{row.status}</span>
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" 
+                      className={classes.tableRow}>
                         {row.note ? row.note : "-"}
                       </TableCell>
                     </TableRow>
@@ -807,7 +844,7 @@ class OrdersTable extends React.Component {
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={7} />
+                  <TableCell colSpan={9} />
                 </TableRow>
               )}
             </TableBody>

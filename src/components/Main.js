@@ -11,7 +11,6 @@ import Hidden from "@material-ui/core/Hidden";
 import Header from "./Header";
 import Navigator from "./Navigator";
 import routes from "./routes/routes";
-import AuthService from "./Auth/AuthService";
 import withAuth from "./Auth/withAuth";
 import { red, green } from "@material-ui/core/colors";
 

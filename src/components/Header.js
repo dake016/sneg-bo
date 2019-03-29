@@ -79,14 +79,14 @@ class Header extends React.Component {
               </Hidden>
               <Grid item xs />
               <Grid item>
-                <Tooltip title="Help">
+                <Tooltip title="Помощь">
                   <IconButton color="inherit">
                     <HelpIcon />
                   </IconButton>
                 </Tooltip>
               </Grid>
               <Grid item>
-                <Tooltip title="Logout">
+                <Tooltip title="Выйти">
                   <IconButton color="inherit" onClick={this.handleLogout}>
                     <ExitToAppOutlinedIcon />
                   </IconButton>

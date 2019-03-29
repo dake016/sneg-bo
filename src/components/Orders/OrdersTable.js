@@ -85,7 +85,14 @@ const rows = [
     id: "pickup",
     numeric: true,
     disablePadding: true,
-    label: "Дата вывоза",
+    label: "Дата забора",
+    sortable: true
+  },
+  {
+    id: "returnDate",
+    numeric: true,
+    disablePadding: true,
+    label: "Дата доставки",
     sortable: true
   },
   {
@@ -101,13 +108,6 @@ const rows = [
     disablePadding: true,
     label: "Корзины",
     sortable: false
-  },
-  {
-    id: "payment",
-    numeric: true,
-    disablePadding: true,
-    label: "Оплата",
-    sortable: true
   },
   {
     id: "status",
@@ -285,7 +285,7 @@ class EnhancedTableToolbar extends React.Component {
                 className={classes.statusButton}
                 variant="outlined"
               >
-                Ожидание курьера на вывоз заказа
+                Ожидание курьера на забор заказа
               </Button>
               <Button
                 onClick={event =>
@@ -341,7 +341,7 @@ class EnhancedTableToolbar extends React.Component {
                   <em>Выбирите статус</em>
                 </MenuItem>
                 <MenuItem value={"ACCEPTED"}>Принят в обработку</MenuItem>
-                <MenuItem value={"PICKUP"}>Ожидание вывоза курьером</MenuItem>
+                <MenuItem value={"PICKUP"}>Ожидание забора курьером</MenuItem>
                 <MenuItem value={"PROCESSING"}>Стирается</MenuItem>
                 <MenuItem value={"RETURN"}>Ожидание доставки курьером</MenuItem>
                 <MenuItem value={"COMPLETED"}>Выполнен</MenuItem>
@@ -542,7 +542,7 @@ class OrderDetails extends React.Component {
             </div>
           </div>
 
-          <div className={classes.groupLabel}>Дата вывоза и доставки</div>
+          <div className={classes.groupLabel}>Дата забора и доставки</div>
           <div className={classes.row}>
             <div className={classes.column}>
               <div className={classes.label}>Время забора</div>
@@ -640,22 +640,35 @@ const styles = theme => ({
     padding: "2px 16px"
   },
   tableRow: {
-    // color: "#f50057",
-    // fontWeight: "bold",
-    fontSize:"11px"
+    fontSize: "11px"
+  },
+  statusTableRow: {
+    color: "#f50057",
+    fontWeight: "bold",
+    fontSize: "11px"
+  },
+  commentTableRow: {
+    fontSize: "11px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "150px"
   }
 });
 
 class OrdersTable extends React.Component {
-  state = {
-    order: "asc",
-    orderBy: "registered",
-    selected: [],
-    page: 0,
-    rowsPerPage: 10,
-    modalOpen: false,
-    selectedRow: {}
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      order: this.props.order,
+      orderBy: this.props.orderBy,
+      selected: [],
+      page: 0,
+      rowsPerPage: 10,
+      modalOpen: false,
+      selectedRow: {}
+    };
+  }
 
   handleRequestSort = (event, property, sortable) => {
     if (!sortable) return;
@@ -730,9 +743,17 @@ class OrdersTable extends React.Component {
     this.setState({ selected: [] });
   };
 
-  checkExpired = id => {
+  checkPickupExpired = id => {
     var row = this.getAllRowByID(id);
     var pickupDate = new Date(Date.parse(row.pickupDate));
+    var now = new Date(Date.now());
+    now.setHours(now.getHours() + 2);
+    return now >= pickupDate ? true : false;
+  };
+
+  checkReturnExpired = id => {
+    var row = this.getAllRowByID(id);
+    var pickupDate = new Date(Date.parse(row.returnDate));
     var now = new Date(Date.now());
     now.setHours(now.getHours() + 2);
     return now >= pickupDate ? true : false;
@@ -741,6 +762,7 @@ class OrdersTable extends React.Component {
   render() {
     const { classes } = this.props;
     const data = this.props.visibleRows;
+    const activeTab = this.props.activeTab;
     const { order, orderBy, selected, rowsPerPage, page } = this.state;
     const emptyRows =
       rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
@@ -784,8 +806,10 @@ class OrdersTable extends React.Component {
                       key={row.id}
                       selected={isSelected}
                     >
-                      <TableCell padding="checkbox"
-                      className={classes.tableRow}>
+                      <TableCell
+                        padding="checkbox"
+                        className={classes.tableRow}
+                      >
                         <Checkbox
                           checked={isSelected}
                           onClick={event =>
@@ -793,8 +817,12 @@ class OrdersTable extends React.Component {
                           }
                         />
                       </TableCell>
-                      <TableCell component="th" scope="row" padding="none"
-                      className={classes.tableRow}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        padding="none"
+                        className={classes.tableRow}
+                      >
                         {row.id}
                       </TableCell>
                       <TableCell
@@ -807,11 +835,28 @@ class OrdersTable extends React.Component {
                       <TableCell
                         align="right"
                         className={
-                          this.checkExpired(row.id) ? classes.tableRow : null
+                          activeTab === 0
+                            ? this.checkPickupExpired(row.id)
+                              ? classes.statusTableRow
+                              : classes.tableRow
+                            : classes.tableRow
                         }
                         padding="none"
                       >
                         {toDateTime(row.pickup)}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        className={
+                          activeTab === 2
+                            ? this.checkReturnExpired(row.id)
+                              ? classes.statusTableRow
+                              : classes.tableRow
+                            : classes.tableRow
+                        }
+                        padding="none"
+                      >
+                        {toDateTime(row.returnDate)}
                       </TableCell>
                       <TableCell
                         align="right"
@@ -820,23 +865,28 @@ class OrdersTable extends React.Component {
                       >
                         {row.phone}
                       </TableCell>
-                      <TableCell align="right" 
-                      className={classes.tableRow}
-                      padding="none">
+                      <TableCell
+                        align="right"
+                        className={classes.tableRow}
+                        padding="none"
+                      >
                         {row.basket.map(basket => (
                           <div key={basket.id}>
                             {basket.type.description}: {basket.count}
                           </div>
                         ))}
                       </TableCell>
-                      <TableCell align="right" padding="none"
-                      className={classes.tableRow}>{row.payment}</TableCell>
-                      <TableCell align="right" padding="none"
-                      className={classes.tableRow}>
+                      <TableCell
+                        align="right"
+                        padding="none"
+                        className={classes.tableRow}
+                      >
                         <span className={classes.status}>{row.status}</span>
                       </TableCell>
-                      <TableCell align="right" 
-                      className={classes.tableRow}>
+                      <TableCell
+                        align="right"
+                        className={classes.commentTableRow}
+                      >
                         {row.note ? row.note : "-"}
                       </TableCell>
                     </TableRow>

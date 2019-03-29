@@ -86,9 +86,9 @@ function dataUpToStatusVisible(data, status) {
         id: row.id,
         registered: row.registered,
         pickup: row.pickupDate,
+        returnDate: row.returnDate,
         phone: row.appUser.phoneNumber,
         basket: row.basketList,
-        payment: row.paymentType.description,
         status: row.status.description,
         note: row.note
       });
@@ -208,7 +208,22 @@ class OrdersList extends React.Component {
               className={classes.tabBadge}
             />
             <Tab textColor="inherit" label="Забор" />
-            <Tab textColor="inherit" label="Стирка" />
+            <Tab
+              textColor="inherit"
+              label={
+                <React.Fragment>
+                  Стирка
+                  <Badge
+                    color="secondary"
+                    badgeContent={countOrders(this.state.rows, ["PROCESSING"])}
+                    className={classes.badge}
+                  >
+                    {" "}
+                  </Badge>
+                </React.Fragment>
+              }
+              className={classes.tabBadge}
+            />
             <Tab textColor="inherit" label="Доставка" />
             <Tab textColor="inherit" label="Выполненые" />
             <Tab textColor="inherit" label="Отмененные" />
@@ -252,6 +267,8 @@ class OrdersList extends React.Component {
               visibleRows={dataUpToStatusVisible(this.state.rows, ["ACCEPTED"])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"asc"}
+              orderBy={"pickup"}
             />
           )}
           {activeTab === 1 && (
@@ -260,6 +277,8 @@ class OrdersList extends React.Component {
               visibleRows={dataUpToStatusVisible(this.state.rows, ["PICKUP"])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"asc"}
+              orderBy={"pickup"}
             />
           )}
           {activeTab === 2 && (
@@ -270,6 +289,8 @@ class OrdersList extends React.Component {
               ])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"asc"}
+              orderBy={"returnDate"}
             />
           )}
           {activeTab === 3 && (
@@ -278,6 +299,8 @@ class OrdersList extends React.Component {
               visibleRows={dataUpToStatusVisible(this.state.rows, ["RETURN"])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"asc"}
+              orderBy={"returnDate"}
             />
           )}
           {activeTab === 4 && (
@@ -288,6 +311,8 @@ class OrdersList extends React.Component {
               ])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"desc"}
+              orderBy={"registered"}
             />
           )}
           {activeTab === 5 && (
@@ -296,6 +321,8 @@ class OrdersList extends React.Component {
               visibleRows={dataUpToStatusVisible(this.state.rows, ["CANCELED"])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"desc"}
+              orderBy={"registered"}
             />
           )}
           {activeTab === 6 && (
@@ -304,6 +331,8 @@ class OrdersList extends React.Component {
               visibleRows={dataUpToStatusVisible(this.state.rows, ["DISPUTE"])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"desc"}
+              orderBy={"registered"}
             />
           )}
           {activeTab === 7 && (
@@ -312,6 +341,8 @@ class OrdersList extends React.Component {
               visibleRows={dataUpToStatusVisible(this.state.rows, ["ALL"])}
               activeTab={activeTab}
               handleOrderStatusChange={this.handleOrderStatusChange}
+              order={"desc"}
+              orderBy={"registered"}
             />
           )}
         </main>

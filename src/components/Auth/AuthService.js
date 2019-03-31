@@ -1,4 +1,6 @@
 import decode from "jwt-decode";
+import fetchTimeout from "./fetchTimeout";
+
 export default class AuthService {
   // Initializing important variables
   constructor() {
@@ -75,7 +77,7 @@ export default class AuthService {
       headers["Authorization"] = "Bearer " + this.getToken();
     }
 
-    return fetch(url, {
+    return fetchTimeout(url, {
       headers,
       ...options
     })

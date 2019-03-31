@@ -15,6 +15,7 @@ import {
   withStyles
 } from "@material-ui/core/styles";
 import AuthService from "./AuthService";
+import Notifications from "../Notifications/Notifications";
 
 let theme = createMuiTheme({
   typography: {
@@ -117,7 +118,8 @@ const styles = theme => ({
 class Login extends React.Component {
   state = {
     login: "",
-    password: ""
+    password: "",
+    showNotification: false
   };
 
   Auth = new AuthService();
@@ -136,6 +138,7 @@ class Login extends React.Component {
       })
       .catch(error => {
         alert("asdasd " + error);
+        this.setState({ showNotification: true });
       });
   };
 
@@ -147,52 +150,55 @@ class Login extends React.Component {
     const { classes } = this.props;
 
     return (
-      <MuiThemeProvider theme={theme}>
-        <main className={classes.main}>
-          <CssBaseline />
-          <Paper className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <form className={classes.form} onSubmit={this.handleFormSubmit}>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="login">Login</InputLabel>
-                <Input
-                  id="login"
-                  name="login"
-                  autoComplete="login"
+      <React.Fragment>
+        {this.state.showNotification === true && <Notifications />}
+        <MuiThemeProvider theme={theme}>
+          <main className={classes.main}>
+            <CssBaseline />
+            <Paper className={classes.paper}>
+              <Avatar className={classes.avatar}>
+                <LockIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <form className={classes.form} onSubmit={this.handleFormSubmit}>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="login">Login</InputLabel>
+                  <Input
+                    id="login"
+                    name="login"
+                    autoComplete="login"
+                    color="primary"
+                    autoFocus
+                    onChange={this.handleChange}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="password">Password</InputLabel>
+                  <Input
+                    name="password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    color="primary"
+                    onChange={this.handleChange}
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
                   color="primary"
-                  autoFocus
-                  onChange={this.handleChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                  name="password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  color="primary"
-                  onChange={this.handleChange}
-                />
-              </FormControl>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-              >
-                Login
-              </Button>
-            </form>
-          </Paper>
-        </main>
-      </MuiThemeProvider>
+                  className={classes.submit}
+                >
+                  Login
+                </Button>
+              </form>
+            </Paper>
+          </main>
+        </MuiThemeProvider>
+      </React.Fragment>
     );
   }
 }

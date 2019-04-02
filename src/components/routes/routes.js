@@ -8,8 +8,9 @@ import Orders from "../Orders/Orders";
 import Users from "../Users/Users";
 import Providers from "../Providers/Providers";
 import Settings from "../Settings";
+// import LogisticOperatorOrders from "../LogisticOperatorOrders/LogisticOperatorOrders";
 
-const routes = [
+const routesMain = [
   {
     path: "/orders",
     sidebarName: "Заказы",
@@ -48,4 +49,15 @@ const routes = [
   { redirect: true, path: "/", to: "/orders", navbarName: "Redirect" }
 ];
 
-export default routes;
+const routesLogisticOperator = [
+  {
+    path: "/orders",
+    sidebarName: "Заказы",
+    navbarName: "Заказы",
+    icon: OrderIcon,
+    component: Orders
+  },
+  { redirect: true, path: "/", to: "/orders", navbarName: "Redirect" }
+];
+
+export { routesMain, routesLogisticOperator };

@@ -10,7 +10,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Hidden from "@material-ui/core/Hidden";
 import Header from "./Header";
 import Navigator from "./Navigator";
-import routes from "./routes/routes";
+import { routesMain, routesLogisticOperator } from "./routes/routes";
 import withAuth from "./Auth/withAuth";
 import { red, green } from "@material-ui/core/colors";
 
@@ -155,7 +155,17 @@ const styles = {
 
 const switchRoutes = (
   <Switch>
-    {routes.map((prop, key) => {
+    {routesMain.map((prop, key) => {
+      if (prop.redirect)
+        return <Redirect from={prop.path} to={prop.to} key={key} />;
+      return <Route path={prop.path} component={prop.component} key={key} />;
+    })}
+  </Switch>
+);
+
+const switchLogisticOperatorRoutes = (
+  <Switch>
+    {routesLogisticOperator.map((prop, key) => {
       if (prop.redirect)
         return <Redirect from={prop.path} to={prop.to} key={key} />;
       return <Route path={prop.path} component={prop.component} key={key} />;
@@ -167,7 +177,8 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mobileOpen: false
+      mobileOpen: false,
+      routes: null
     };
     this.resizeFunction = this.resizeFunction.bind(this);
   }
@@ -178,6 +189,16 @@ class Main extends React.Component {
     if (window.innerWidth >= 960) {
       this.setState({ mobileOpen: false });
     }
+  }
+  componentWillMount() {
+    this.setState({
+      routes:
+        this.props.user.scopes === "ROLE_AP_ADMIN"
+          ? routesMain
+          : this.props.user.scopes === "ROLE_AP_OPERATOR"
+          ? routesLogisticOperator
+          : routesLogisticOperator
+    });
   }
   componentDidMount() {
     window.addEventListener("resize", this.resizeFunction);
@@ -201,7 +222,7 @@ class Main extends React.Component {
           <nav className={classes.drawer}>
             <Hidden smUp implementation="js">
               <Navigator
-                routes={routes}
+                routes={this.state.routes}
                 PaperProps={{ style: { width: drawerWidth } }}
                 variant="temporary"
                 open={this.state.mobileOpen}
@@ -211,7 +232,7 @@ class Main extends React.Component {
             </Hidden>
             <Hidden xsDown implementation="css">
               <Navigator
-                routes={routes}
+                routes={this.state.routes}
                 PaperProps={{ style: { width: drawerWidth } }}
                 {...rest}
               />
@@ -219,11 +240,14 @@ class Main extends React.Component {
           </nav>
           <div className={classes.appContent}>
             <Header
-              routes={routes}
+              routes={this.state.routes}
               onDrawerToggle={this.handleDrawerToggle}
               {...rest}
             />
-            {switchRoutes}
+            {console.log(this.props.user.scopes)}
+            {this.props.user.scopes === "ROLE_AP_ADMIN" && switchRoutes}
+            {this.props.user.scopes === "ROLE_AP_OPERATOR" &&
+              switchLogisticOperatorRoutes}
           </div>
         </div>
       </MuiThemeProvider>

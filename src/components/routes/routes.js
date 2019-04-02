@@ -8,7 +8,7 @@ import Orders from "../Orders/Orders";
 import Users from "../Users/Users";
 import Providers from "../Providers/Providers";
 import Settings from "../Settings";
-// import LogisticOperatorOrders from "../LogisticOperatorOrders/LogisticOperatorOrders";
+import LogisticOperatorOrders from "../LogisticOperatorOrders/LogisticOperatorOrders";
 
 const routesMain = [
   {
@@ -53,9 +53,9 @@ const routesLogisticOperator = [
   {
     path: "/orders",
     sidebarName: "Заказы",
-    navbarName: "Заказы",
+    navbarName: "Заказы для оператора",
     icon: OrderIcon,
-    component: Orders
+    component: LogisticOperatorOrders
   },
   { redirect: true, path: "/", to: "/orders", navbarName: "Redirect" }
 ];

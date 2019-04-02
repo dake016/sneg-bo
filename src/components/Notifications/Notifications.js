@@ -20,7 +20,7 @@ const variantIcon = {
   info: InfoIcon
 };
 
-const styles = theme => ({
+const styles1 = theme => ({
   success: {
     backgroundColor: green[600]
   },
@@ -84,26 +84,21 @@ MySnackbarContent.propTypes = {
   variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired
 };
 
-const MySnackbarContentWrapper = withStyles(styles)(MySnackbarContent);
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+
+const styles2 = theme => ({
+  snack: {
+    bottom: "50px"
+  }
+});
 
 class CustomizedSnackbars extends React.Component {
-  state = {
-    open: true
-  };
-
-  handleClick = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    this.setState({ open: false });
+  handleClose = () => {
+    this.props.handleClose();
   };
 
   render() {
+    const { classes, variant, message, durationTime } = this.props;
     return (
       <div>
         <Snackbar
@@ -111,13 +106,15 @@ class CustomizedSnackbars extends React.Component {
             vertical: "bottom",
             horizontal: "center"
           }}
-          open={this.state.open}
+          open={this.props.open}
           onClose={this.handleClose}
+          className={classes.snack}
+          autoHideDuration={durationTime === 0 ? null : durationTime}
         >
           <MySnackbarContentWrapper
             onClose={this.handleClose}
-            variant="success"
-            message="This is a success message!"
+            variant={variant}
+            message={message}
           />
         </Snackbar>
       </div>
@@ -129,4 +126,4 @@ CustomizedSnackbars.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default CustomizedSnackbars;
+export default withStyles(styles2)(CustomizedSnackbars);

@@ -124,6 +124,14 @@ class Login extends React.Component {
 
   Auth = new AuthService();
 
+  handleNotificationClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    this.setState({ showNotification: false });
+  };
+
   handleChange = (event, value) => {
     this.setState({
       [event.target.name]: event.target.value
@@ -137,7 +145,6 @@ class Login extends React.Component {
         this.props.history.replace("/");
       })
       .catch(error => {
-        alert("asdasd " + error);
         this.setState({ showNotification: true });
       });
   };
@@ -151,7 +158,13 @@ class Login extends React.Component {
 
     return (
       <React.Fragment>
-        {this.state.showNotification === true && <Notifications />}
+        <Notifications
+          open={this.state.showNotification}
+          variant={"error"}
+          message={"Упс. Что-то пошло не так, попробуйте еще раз"}
+          durationTime={5000}
+          handleClose={this.handleNotificationClose}
+        />
         <MuiThemeProvider theme={theme}>
           <main className={classes.main}>
             <CssBaseline />
@@ -160,11 +173,11 @@ class Login extends React.Component {
                 <LockIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
-                Sign in
+                SNEG Inc.
               </Typography>
               <form className={classes.form} onSubmit={this.handleFormSubmit}>
                 <FormControl margin="normal" required fullWidth>
-                  <InputLabel htmlFor="login">Login</InputLabel>
+                  <InputLabel htmlFor="login">Логин</InputLabel>
                   <Input
                     id="login"
                     name="login"
@@ -175,7 +188,7 @@ class Login extends React.Component {
                   />
                 </FormControl>
                 <FormControl margin="normal" required fullWidth>
-                  <InputLabel htmlFor="password">Password</InputLabel>
+                  <InputLabel htmlFor="password">Пароль</InputLabel>
                   <Input
                     name="password"
                     type="password"
@@ -192,7 +205,7 @@ class Login extends React.Component {
                   color="primary"
                   className={classes.submit}
                 >
-                  Login
+                  Войти
                 </Button>
               </form>
             </Paper>

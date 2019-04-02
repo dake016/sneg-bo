@@ -5,7 +5,7 @@ export default class AuthService {
   // Initializing important variables
   constructor() {
     // this.domain = "http://localhost:8080"; // API server domain
-    // this.domain = "http://172.23.19.39:9010";
+    //this.domain = "http://172.23.19.39:9010";
     this.domain = "http://46.101.157.4:9010";
     this.fetch = this.fetch.bind(this); // React binding stuff
     this.login = this.login.bind(this);
@@ -13,7 +13,6 @@ export default class AuthService {
   }
 
   login(username, password) {
-    console.log(username + ":" + password);
     // Get a token from api server using the fetch api
     return this.fetch(`${this.domain}/bo/sign-in`, {
       method: "POST",

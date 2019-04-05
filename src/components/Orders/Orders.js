@@ -55,8 +55,11 @@ const styles = theme => ({
   },
   badge: {
     top: "50%",
-    right: -15,
-    backgroundColor: "#eaeff1"
+    right: -15
+  },
+  colorPrimary: {
+    backgroundColor: "#fff",
+    color: "#009be5"
   },
   tabBadge: {
     paddingRight: "30px"
@@ -196,13 +199,25 @@ class OrdersList extends React.Component {
               label={
                 <React.Fragment>
                   Активные
-                  <Badge
-                    color="secondary"
-                    badgeContent={countOrders(this.state.rows, ["ACCEPTED"])}
-                    className={classes.badge}
-                  >
-                    {" "}
-                  </Badge>
+                  {countOrders(this.state.rows, ["ACCEPTED"]) > 0 ? (
+                    <Badge
+                      color="secondary"
+                      badgeContent={countOrders(this.state.rows, ["ACCEPTED"])}
+                      className={classes.badge}
+                    >
+                      {" "}
+                    </Badge>
+                  ) : (
+                    <Badge
+                      color="primary"
+                      showZero
+                      badgeContent={"0"}
+                      className={classes.badge}
+                      classes={{ colorPrimary: classes.colorPrimary }}
+                    >
+                      {" "}
+                    </Badge>
+                  )}
                 </React.Fragment>
               }
               className={classes.tabBadge}

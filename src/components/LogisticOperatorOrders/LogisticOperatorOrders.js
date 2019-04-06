@@ -53,18 +53,30 @@ const styles = theme => ({
     padding: "14px 36px 0",
     background: "#eaeff1"
   },
-  badge: {
-    top: "50%",
-    right: -15,
-    backgroundColor: "#eaeff1"
-  },
-  tabBadge: {
-    paddingRight: "30px"
-  },
   newOrders: {
     alignSelf: "center",
     marginLeft: "auto",
     marginRight: "50px"
+  },
+  numCircle: {
+    borderRadius: "0.8em",
+    backgroundColor: "#fff",
+    color: "#009be5",
+    display: "inline-block",
+    lineHeight: "1.6em",
+    marginLeft: "3px",
+    textAlign: "center",
+    width: "1.6em"
+  },
+  numCircleRed: {
+    borderRadius: "0.8em",
+    backgroundColor: "#f50057",
+    color: "#fff",
+    display: "inline-block",
+    lineHeight: "1.6em",
+    marginLeft: "3px",
+    textAlign: "center",
+    width: "1.6em"
   }
 });
 
@@ -194,39 +206,83 @@ class OrdersList extends React.Component {
               label={
                 <React.Fragment>
                   Активные
-                  <Badge
-                    color="secondary"
-                    badgeContent={countOrders(this.state.rows, ["ACCEPTED"])}
-                    className={classes.badge}
-                  >
-                    {" "}
-                  </Badge>
+                  {countOrders(this.state.rows, ["ACCEPTED"]) > 0 ? (
+                    <div className={classes.numCircleRed}>
+                      {countOrders(this.state.rows, ["ACCEPTED"])}
+                    </div>
+                  ) : (
+                    <div className={classes.numCircle}>
+                      {countOrders(this.state.rows, ["ACCEPTED"])}
+                    </div>
+                  )}
                 </React.Fragment>
               }
-              className={classes.tabBadge}
             />
-            <Tab textColor="inherit" label="Забор" />
+            <Tab
+              textColor="inherit"
+              label={
+                <React.Fragment>
+                  Забор
+                  {countOrders(this.state.rows, ["PICKUP"]) > 0 ? (
+                    <div className={classes.numCircleRed}>
+                      {countOrders(this.state.rows, ["PICKUP"])}
+                    </div>
+                  ) : (
+                    <div className={classes.numCircle}>
+                      {countOrders(this.state.rows, ["PICKUP"])}
+                    </div>
+                  )}
+                </React.Fragment>
+              }
+            />
             <Tab
               textColor="inherit"
               label={
                 <React.Fragment>
                   Стирка
-                  <Badge
-                    color="secondary"
-                    badgeContent={countOrders(this.state.rows, ["PROCESSING"])}
-                    className={classes.badge}
-                  >
-                    {" "}
-                  </Badge>
+                  {countOrders(this.state.rows, ["PROCESSING"]) > 0 ? (
+                    <div className={classes.numCircleRed}>
+                      {countOrders(this.state.rows, ["PROCESSING"])}
+                    </div>
+                  ) : (
+                    <div className={classes.numCircle}>
+                      {countOrders(this.state.rows, ["PROCESSING"])}
+                    </div>
+                  )}
                 </React.Fragment>
               }
-              className={classes.tabBadge}
             />
-            <Tab textColor="inherit" label="Доставка" />
+            <Tab
+              textColor="inherit"
+              label={
+                <React.Fragment>
+                  Доставка
+                  {countOrders(this.state.rows, ["RETURN"]) > 0 ? (
+                    <div className={classes.numCircleRed}>
+                      {countOrders(this.state.rows, ["RETURN"])}
+                    </div>
+                  ) : (
+                    <div className={classes.numCircle}>
+                      {countOrders(this.state.rows, ["RETURN"])}
+                    </div>
+                  )}
+                </React.Fragment>
+              }
+            />
             <Tab textColor="inherit" label="Выполненые" />
             <Tab textColor="inherit" label="Отмененные" />
             <Tab textColor="inherit" label="Диспут" />
-            <Tab textColor="inherit" label="Все заказы" />
+            <Tab
+              textColor="inherit"
+              label={
+                <React.Fragment>
+                  Все заказы
+                  <div className={classes.numCircle}>
+                    {countOrders(this.state.rows, ["ALL"])}
+                  </div>
+                </React.Fragment>
+              }
+            />
             <div className={classes.newOrders}>
               {" "}
               {this.state.newOrdersCount - this.state.rows.length > 0 ? (
@@ -239,7 +295,9 @@ class OrdersList extends React.Component {
                       <RefreshOutlinedIcon />
                     </IconButton>{" "}
                     Новых заказов{" "}
-                    {this.state.newOrdersCount - this.state.rows.length}
+                    <div className={classes.numCircleRed}>
+                      {this.state.newOrdersCount - this.state.rows.length}
+                    </div>
                   </React.Fragment>
                 ) : (
                   <React.Fragment>

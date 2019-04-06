@@ -58,7 +58,6 @@ class Providers extends React.Component {
   componentDidMount() {
     this.Auth.fetch(`${this.Auth.domain}/sp/orders`, { method: "GET" })
       .then(response => {
-        console.log(response.content);
         this.setState({ rows: response.content });
       })
       .catch(error => alert("SP " + error));

@@ -244,7 +244,6 @@ class Main extends React.Component {
               onDrawerToggle={this.handleDrawerToggle}
               {...rest}
             />
-            {console.log(this.props.user.scopes)}
             {this.props.user.scopes === "ROLE_AP_ADMIN" && switchRoutes}
             {this.props.user.scopes === "ROLE_AP_OPERATOR" &&
               switchLogisticOperatorRoutes}

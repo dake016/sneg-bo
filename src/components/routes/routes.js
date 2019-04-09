@@ -8,6 +8,7 @@ import Orders from "../Orders/Orders";
 import Users from "../Users/Users";
 import Providers from "../Providers/Providers";
 import Settings from "../Settings";
+import History from "../History/History";
 import LogisticOperatorOrders from "../LogisticOperatorOrders/LogisticOperatorOrders";
 
 const routesMain = [
@@ -38,6 +39,13 @@ const routesMain = [
     navbarName: "Финансы",
     icon: FinanceIcon,
     component: Settings
+  },
+  {
+    path: "/actions",
+    sidebarName: "Журнал действий",
+    navbarName: "Журнал действий",
+    icon: SettingsIcon,
+    component: History
   },
   {
     path: "/settings",

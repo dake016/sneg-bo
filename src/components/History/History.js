@@ -31,12 +31,13 @@ class History extends React.Component {
   }
 
   getHistory() {
-    this.Auth.fetch(`${this.Auth.domain}/order/all`, { method: "GET" })
-      .then(response =>
+    this.Auth.fetch(`${this.Auth.domain}/bo/logs`, { method: "GET" })
+      .then(response => {
+        console.log(response);
         this.setState({
           history: response.content
-        })
-      )
+        });
+      })
       .catch(error => alert("Orders " + error));
   }
 
@@ -68,7 +69,7 @@ class History extends React.Component {
         </AppBar>
         <main className={classes.mainContent}>
           {activeTab === 0 && <React.Fragment />}
-          {activeTab === 1 && <OrdersTable />}
+          {activeTab === 1 && <React.Fragment />}
         </main>
       </React.Fragment>
     );

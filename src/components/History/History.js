@@ -6,6 +6,7 @@ import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
+import HistoryTable from "./HistoryTable";
 
 const styles = theme => ({
   secondaryBar: {
@@ -17,6 +18,20 @@ const styles = theme => ({
     background: "#eaeff1"
   }
 });
+
+function visibleData(data) {
+  var newData = [];
+  data.map(row => {
+    newData.push({
+      id: row.id,
+      user_name: row.user.username,
+      action_value: row.value,
+      action_type: row.type.description,
+      date: row.eventDate
+    });
+  });
+  return newData;
+}
 
 class History extends React.Component {
   state = {
@@ -33,7 +48,6 @@ class History extends React.Component {
   getHistory() {
     this.Auth.fetch(`${this.Auth.domain}/bo/logs`, { method: "GET" })
       .then(response => {
-        console.log(response);
         this.setState({
           history: response.content
         });
@@ -68,7 +82,9 @@ class History extends React.Component {
           </Tabs>
         </AppBar>
         <main className={classes.mainContent}>
-          {activeTab === 0 && <React.Fragment />}
+          {activeTab === 0 && (
+            <HistoryTable visibleRows={visibleData(this.state.history)} />
+          )}
           {activeTab === 1 && <React.Fragment />}
         </main>
       </React.Fragment>

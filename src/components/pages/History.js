@@ -6,7 +6,7 @@ import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
-import HistoryTable from "./HistoryTable";
+import HistoryTable from "../History/HistoryTable";
 
 const styles = theme => ({
   secondaryBar: {

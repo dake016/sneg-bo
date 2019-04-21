@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
-import Main from "./components/Main";
-import Login from "./components/Auth/Login";
+import Main from "./components/Base/Main";
+import Login from "./components/pages/Login";
 
 import "./App.css";
 

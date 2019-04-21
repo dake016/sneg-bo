@@ -14,7 +14,7 @@ import {
   createMuiTheme,
   withStyles
 } from "@material-ui/core/styles";
-import AuthService from "./AuthService";
+import AuthService from "../Auth/AuthService";
 import Notifications from "../Notifications/Notifications";
 
 let theme = createMuiTheme({

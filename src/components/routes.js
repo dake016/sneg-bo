@@ -4,12 +4,12 @@ import OrderIcon from "@material-ui/icons/Assignment";
 import SpIcon from "@material-ui/icons/LocalLaundryService";
 import FinanceIcon from "@material-ui/icons/MonetizationOn";
 
-import Orders from "../Orders/Orders";
-import Users from "../Users/Users";
-import Providers from "../Providers/Providers";
-import Settings from "../Settings";
-import History from "../History/History";
-import LogisticOperatorOrders from "../LogisticOperatorOrders/LogisticOperatorOrders";
+import Orders from "./pages/Orders";
+import Users from "./pages/Users";
+import Providers from "./pages/Providers";
+import Settings from "./pages/Settings";
+import History from "./pages/History";
+import LogisticOperatorOrders from "./pages/LogisticOperatorOrders";
 
 const routesMain = [
   {

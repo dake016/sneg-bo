@@ -4,14 +4,16 @@ import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-import Badge from "@material-ui/core/Badge";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import IconButton from "@material-ui/core/IconButton";
 import RefreshOutlinedIcon from "@material-ui/icons/RefreshOutlined";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
 import OrdersTable from "./LogisticOperatorOrdersTable";
+import Notifications from "../Notifications/Notifications";
 
 var statusList = [];
+const updateTime = 5000;
 
 function getStatusIdByName(name) {
   var id = 0;
@@ -24,6 +26,18 @@ function getStatusIdByName(name) {
 }
 
 const styles = theme => ({
+  loading: {
+    background: "#e9e9e9",
+    top: "",
+    right: "0",
+    bottom: "0",
+    left: "0",
+    opacity: "0.5",
+    marginTop: "-4px"
+  },
+  loadingAmination: {
+    top: "-4px"
+  },
   secondaryBar: {
     zIndex: 0
   },
@@ -119,9 +133,12 @@ function countOrders(data, status) {
 
 class OrdersList extends React.Component {
   state = {
+    loading: true,
     activeTab: 0,
     rows: [],
-    newOrdersCount: 0
+    newOrdersCount: 0,
+    showNotification: false,
+    notificationMessage: ""
   };
 
   Auth = new AuthService();
@@ -136,10 +153,15 @@ class OrdersList extends React.Component {
     this.interval = setInterval(() => {
       this.Auth.fetch(`${this.Auth.domain}/order/all`, { method: "GET" })
         .then(response => {
-          this.setState({ newOrdersCount: response.content.length });
+          this.setState({
+            newOrdersCount: response.content.length
+          });
         })
-        .catch(error => alert("Auto orders" + error));
-    }, 5000);
+        .catch(error => {
+          var notificationMessage = "Ошибка сервера.";
+          this.setState({ showNotification: true, notificationMessage });
+        });
+    }, updateTime);
   }
 
   componentWillUnmount() {
@@ -151,25 +173,39 @@ class OrdersList extends React.Component {
       .then(response =>
         this.setState({
           rows: response.content,
-          newOrdersCount: response.content.length
+          newOrdersCount: response.content.length,
+          loading: false
         })
       )
-      .catch(error => alert("Orders " + error));
+      .catch(error => {
+        var notificationMessage =
+          "Не возможно получить список заказов. Ошибка сервера.";
+        this.setState({ showNotification: true, notificationMessage });
+      });
   }
 
   getStatuses() {
     this.Auth.fetch(`${this.Auth.domain}/order/statuses`, { method: "GET" })
       .then(response => (statusList = response.content))
-      .catch(error => alert("Statuses " + error));
+      .catch(error => {
+        var notificationMessage =
+          "Не возможно получить статусы. Ошибка сервера.";
+        this.setState({ showNotification: true, notificationMessage });
+      });
   }
 
   updateOrderStatus(newJson, id) {
+    this.setState({ loading: true });
     this.Auth.fetch(`${this.Auth.domain}/order/update/status/${id}`, {
       method: "POST",
       body: JSON.stringify(newJson)
     })
       .then(() => this.getOrdersList())
-      .catch(error => alert("Orders Update " + error));
+      .catch(error => {
+        var notificationMessage =
+          "Не возможно обновить статус. Ошибка сервера.";
+        this.setState({ showNotification: true, notificationMessage });
+      });
   }
 
   handleOrderStatusChange = (event, ids, type) => {
@@ -183,225 +219,250 @@ class OrdersList extends React.Component {
     this.updateOrderStatus(rows, getStatusIdByName(type));
   };
 
+  handleNotificationClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    this.setState({ showNotification: false });
+  };
+
   render() {
     const { classes } = this.props;
     const { activeTab } = this.state;
 
     return (
       <React.Fragment>
-        <AppBar
-          component="div"
-          className={classes.secondaryBar}
-          color="primary"
-          position="static"
-          elevation={0}
-        >
-          <Tabs
-            textColor="inherit"
-            value={activeTab}
-            onChange={this.handleChange}
+        {this.state.loading && (
+          <LinearProgress className={classes.loadingAmination} />
+        )}
+        <Notifications
+          open={this.state.showNotification}
+          variant={"error"}
+          message={this.state.notificationMessage}
+          durationTime={5000}
+          handleClose={this.handleNotificationClose}
+        />
+        <div className={this.state.loading === true ? classes.loading : null}>
+          <AppBar
+            component="div"
+            className={classes.secondaryBar}
+            color="primary"
+            position="static"
+            elevation={0}
           >
-            <Tab
+            <Tabs
               textColor="inherit"
-              label={
-                <React.Fragment>
-                  Активные
-                  {countOrders(this.state.rows, ["ACCEPTED"]) > 0 ? (
-                    <div className={classes.numCircleRed}>
-                      {countOrders(this.state.rows, ["ACCEPTED"])}
-                    </div>
-                  ) : (
-                    <div className={classes.numCircle}>
-                      {countOrders(this.state.rows, ["ACCEPTED"])}
-                    </div>
-                  )}
-                </React.Fragment>
-              }
-            />
-            <Tab
-              textColor="inherit"
-              label={
-                <React.Fragment>
-                  Забор
-                  {countOrders(this.state.rows, ["PICKUP"]) > 0 ? (
-                    <div className={classes.numCircleRed}>
-                      {countOrders(this.state.rows, ["PICKUP"])}
-                    </div>
-                  ) : (
-                    <div className={classes.numCircle}>
-                      {countOrders(this.state.rows, ["PICKUP"])}
-                    </div>
-                  )}
-                </React.Fragment>
-              }
-            />
-            <Tab
-              textColor="inherit"
-              label={
-                <React.Fragment>
-                  Стирка
-                  {countOrders(this.state.rows, ["PROCESSING"]) > 0 ? (
-                    <div className={classes.numCircleRed}>
-                      {countOrders(this.state.rows, ["PROCESSING"])}
-                    </div>
-                  ) : (
-                    <div className={classes.numCircle}>
-                      {countOrders(this.state.rows, ["PROCESSING"])}
-                    </div>
-                  )}
-                </React.Fragment>
-              }
-            />
-            <Tab
-              textColor="inherit"
-              label={
-                <React.Fragment>
-                  Доставка
-                  {countOrders(this.state.rows, ["RETURN"]) > 0 ? (
-                    <div className={classes.numCircleRed}>
-                      {countOrders(this.state.rows, ["RETURN"])}
-                    </div>
-                  ) : (
-                    <div className={classes.numCircle}>
-                      {countOrders(this.state.rows, ["RETURN"])}
-                    </div>
-                  )}
-                </React.Fragment>
-              }
-            />
-            <Tab textColor="inherit" label="Выполненые" />
-            <Tab textColor="inherit" label="Отмененные" />
-            <Tab textColor="inherit" label="Диспут" />
-            <Tab
-              textColor="inherit"
-              label={
-                <React.Fragment>
-                  Все заказы
-                  <div className={classes.numCircle}>
-                    {countOrders(this.state.rows, ["ALL"])}
-                  </div>
-                </React.Fragment>
-              }
-            />
-            <div className={classes.newOrders}>
-              {" "}
-              {this.state.newOrdersCount - this.state.rows.length > 0 ? (
-                this.state.newOrdersCount - this.state.rows.length > 1 ? (
+              value={activeTab}
+              onChange={this.handleChange}
+            >
+              <Tab
+                textColor="inherit"
+                label={
                   <React.Fragment>
-                    <IconButton
-                      color="inherit"
-                      onClick={() => this.getOrdersList()}
-                    >
-                      <RefreshOutlinedIcon />
-                    </IconButton>{" "}
-                    Новых заказов{" "}
-                    <div className={classes.numCircleRed}>
-                      {this.state.newOrdersCount - this.state.rows.length}
+                    Активные
+                    {countOrders(this.state.rows, ["ACCEPTED"]) > 0 ? (
+                      <div className={classes.numCircleRed}>
+                        {countOrders(this.state.rows, ["ACCEPTED"])}
+                      </div>
+                    ) : (
+                      <div className={classes.numCircle}>
+                        {countOrders(this.state.rows, ["ACCEPTED"])}
+                      </div>
+                    )}
+                  </React.Fragment>
+                }
+              />
+              <Tab
+                textColor="inherit"
+                label={
+                  <React.Fragment>
+                    Забор
+                    {countOrders(this.state.rows, ["PICKUP"]) > 0 ? (
+                      <div className={classes.numCircleRed}>
+                        {countOrders(this.state.rows, ["PICKUP"])}
+                      </div>
+                    ) : (
+                      <div className={classes.numCircle}>
+                        {countOrders(this.state.rows, ["PICKUP"])}
+                      </div>
+                    )}
+                  </React.Fragment>
+                }
+              />
+              <Tab
+                textColor="inherit"
+                label={
+                  <React.Fragment>
+                    Стирка
+                    {countOrders(this.state.rows, ["PROCESSING"]) > 0 ? (
+                      <div className={classes.numCircleRed}>
+                        {countOrders(this.state.rows, ["PROCESSING"])}
+                      </div>
+                    ) : (
+                      <div className={classes.numCircle}>
+                        {countOrders(this.state.rows, ["PROCESSING"])}
+                      </div>
+                    )}
+                  </React.Fragment>
+                }
+              />
+              <Tab
+                textColor="inherit"
+                label={
+                  <React.Fragment>
+                    Доставка
+                    {countOrders(this.state.rows, ["RETURN"]) > 0 ? (
+                      <div className={classes.numCircleRed}>
+                        {countOrders(this.state.rows, ["RETURN"])}
+                      </div>
+                    ) : (
+                      <div className={classes.numCircle}>
+                        {countOrders(this.state.rows, ["RETURN"])}
+                      </div>
+                    )}
+                  </React.Fragment>
+                }
+              />
+              <Tab textColor="inherit" label="Выполненые" />
+              <Tab textColor="inherit" label="Отмененные" />
+              <Tab textColor="inherit" label="Диспут" />
+              <Tab
+                textColor="inherit"
+                label={
+                  <React.Fragment>
+                    Все заказы
+                    <div className={classes.numCircle}>
+                      {countOrders(this.state.rows, ["ALL"])}
                     </div>
                   </React.Fragment>
+                }
+              />
+              <div className={classes.newOrders}>
+                {" "}
+                {this.state.newOrdersCount - this.state.rows.length > 0 ? (
+                  this.state.newOrdersCount - this.state.rows.length > 1 ? (
+                    <React.Fragment>
+                      <IconButton
+                        color="inherit"
+                        onClick={() => this.getOrdersList()}
+                      >
+                        <RefreshOutlinedIcon />
+                      </IconButton>{" "}
+                      Новых заказов{" "}
+                      <div className={classes.numCircleRed}>
+                        {this.state.newOrdersCount - this.state.rows.length}
+                      </div>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <IconButton
+                        color="inherit"
+                        onClick={() => this.getOrdersList()}
+                      >
+                        <RefreshOutlinedIcon />
+                      </IconButton>{" "}
+                      Новый заказ
+                    </React.Fragment>
+                  )
                 ) : (
-                  <React.Fragment>
-                    <IconButton
-                      color="inherit"
-                      onClick={() => this.getOrdersList()}
-                    >
-                      <RefreshOutlinedIcon />
-                    </IconButton>{" "}
-                    Новый заказ
-                  </React.Fragment>
-                )
-              ) : (
-                ``
-              )}
-            </div>
-          </Tabs>
-        </AppBar>
-        <main className={classes.mainContent}>
-          {activeTab === 0 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["ACCEPTED"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, ["ACCEPTED"])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"asc"}
-              orderBy={"pickup"}
-            />
-          )}
-          {activeTab === 1 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["PICKUP"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, ["PICKUP"])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"asc"}
-              orderBy={"pickup"}
-            />
-          )}
-          {activeTab === 2 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["PROCESSING"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, [
-                "PROCESSING"
-              ])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"asc"}
-              orderBy={"returnDate"}
-            />
-          )}
-          {activeTab === 3 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["RETURN"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, ["RETURN"])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"asc"}
-              orderBy={"returnDate"}
-            />
-          )}
-          {activeTab === 4 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["COMPLETED"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, [
-                "COMPLETED"
-              ])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"desc"}
-              orderBy={"registered"}
-            />
-          )}
-          {activeTab === 5 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["CANCELED"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, ["CANCELED"])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"desc"}
-              orderBy={"registered"}
-            />
-          )}
-          {activeTab === 6 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["DISPUTE"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, ["DISPUTE"])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"desc"}
-              orderBy={"registered"}
-            />
-          )}
-          {activeTab === 7 && (
-            <OrdersTable
-              allRows={dataUpToStatus(this.state.rows, ["ALL"])}
-              visibleRows={dataUpToStatusVisible(this.state.rows, ["ALL"])}
-              activeTab={activeTab}
-              handleOrderStatusChange={this.handleOrderStatusChange}
-              order={"desc"}
-              orderBy={"registered"}
-            />
-          )}
-        </main>
+                  ``
+                )}
+              </div>
+            </Tabs>
+          </AppBar>
+          <main className={classes.mainContent}>
+            {activeTab === 0 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["ACCEPTED"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, [
+                  "ACCEPTED"
+                ])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"asc"}
+                orderBy={"pickup"}
+              />
+            )}
+            {activeTab === 1 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["PICKUP"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, ["PICKUP"])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"asc"}
+                orderBy={"pickup"}
+              />
+            )}
+            {activeTab === 2 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["PROCESSING"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, [
+                  "PROCESSING"
+                ])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"asc"}
+                orderBy={"returnDate"}
+              />
+            )}
+            {activeTab === 3 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["RETURN"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, ["RETURN"])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"asc"}
+                orderBy={"returnDate"}
+              />
+            )}
+            {activeTab === 4 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["COMPLETED"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, [
+                  "COMPLETED"
+                ])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"desc"}
+                orderBy={"registered"}
+              />
+            )}
+            {activeTab === 5 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["CANCELED"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, [
+                  "CANCELED"
+                ])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"desc"}
+                orderBy={"registered"}
+              />
+            )}
+            {activeTab === 6 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["DISPUTE"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, [
+                  "DISPUTE"
+                ])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"desc"}
+                orderBy={"registered"}
+              />
+            )}
+            {activeTab === 7 && (
+              <OrdersTable
+                allRows={dataUpToStatus(this.state.rows, ["ALL"])}
+                visibleRows={dataUpToStatusVisible(this.state.rows, ["ALL"])}
+                activeTab={activeTab}
+                handleOrderStatusChange={this.handleOrderStatusChange}
+                order={"desc"}
+                orderBy={"registered"}
+              />
+            )}
+          </main>
+        </div>
       </React.Fragment>
     );
   }

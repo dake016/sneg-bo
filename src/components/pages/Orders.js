@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import RefreshOutlinedIcon from "@material-ui/icons/RefreshOutlined";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
-import OrdersTable from "./OrdersTable";
+import OrdersTable from "../Orders/OrdersTable";
 import Notifications from "../Notifications/Notifications";
 
 var statusList = [];

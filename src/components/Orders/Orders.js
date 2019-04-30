@@ -62,7 +62,7 @@ const styles = theme => ({
   },
   mainContent: {
     flex: 1,
-    padding: "14px 36px 0",
+    padding: "1px 30px 10px",
     background: "#eaeff1"
   },
   newOrders: {

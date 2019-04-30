@@ -1,11 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
 import ProvidersTable from "./ProvidersTable";
 
 const styles = theme => ({
+  loading: {
+    background: "#e9e9e9",
+    top: "",
+    right: "0",
+    bottom: "0",
+    left: "0",
+    opacity: "0.5",
+    marginTop: "-4px"
+  },
+  loadingAmination: {
+    top: "-4px"
+  },
   secondaryBar: {
     zIndex: 0
   },
@@ -50,15 +63,17 @@ function visibleData(data) {
 
 class Providers extends React.Component {
   state = {
+    loading: false,
     rows: []
   };
 
   Auth = new AuthService();
 
   componentDidMount() {
+    this.setState({ loading: true });
     this.Auth.fetch(`${this.Auth.domain}/sp/orders`, { method: "GET" })
       .then(response => {
-        this.setState({ rows: response.content });
+        this.setState({ rows: response.content, loading: false });
       })
       .catch(error => alert("SP " + error));
   }
@@ -68,12 +83,17 @@ class Providers extends React.Component {
 
     return (
       <React.Fragment>
-        <main className={classes.mainContent}>
-          <ProvidersTable
-            allRows={this.state.rows}
-            visibleRows={visibleData(this.state.rows)}
-          />
-        </main>
+        {this.state.loading && (
+          <LinearProgress className={classes.loadingAmination} />
+        )}
+        <div className={this.state.loading === true ? classes.loading : null}>
+          <main className={classes.mainContent}>
+            <ProvidersTable
+              allRows={this.state.rows}
+              visibleRows={visibleData(this.state.rows)}
+            />
+          </main>
+        </div>
       </React.Fragment>
     );
   }

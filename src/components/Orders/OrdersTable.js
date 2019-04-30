@@ -642,6 +642,10 @@ const styles = theme => ({
   tableRow: {
     fontSize: "11px"
   },
+  statusRow: {
+    fontSize: "11px",
+    minWidth: "150px"
+  },
   statusTableRow: {
     color: "#f50057",
     fontWeight: "bold",
@@ -879,7 +883,7 @@ class OrdersTable extends React.Component {
                       <TableCell
                         align="right"
                         padding="none"
-                        className={classes.tableRow}
+                        className={classes.statusRow}
                       >
                         <span className={classes.status}>{row.status}</span>
                       </TableCell>

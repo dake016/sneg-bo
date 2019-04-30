@@ -5,15 +5,13 @@ import AppBar from "@material-ui/core/AppBar";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import IconButton from "@material-ui/core/IconButton";
-import RefreshOutlinedIcon from "@material-ui/icons/RefreshOutlined";
 import AuthService from "../Auth/AuthService";
 import withAuth from "../Auth/withAuth";
 import OrdersTable from "./OrdersTable";
 import Notifications from "../Notifications/Notifications";
 
 var statusList = [];
-const updateTime = 5000;
+const updateTime = 10000;
 
 function getStatusIdByName(name) {
   var id = 0;
@@ -140,6 +138,7 @@ class OrdersList extends React.Component {
     rows: [],
     newOrdersCount: 0,
     showNotification: false,
+    showUpdateNotification: false,
     notificationMessage: ""
   };
 
@@ -155,9 +154,27 @@ class OrdersList extends React.Component {
     this.interval = setInterval(() => {
       this.Auth.fetch(`${this.Auth.domain}/order/all`, { method: "GET" })
         .then(response => {
-          this.setState({
-            newOrdersCount: response.content.length
-          });
+          this.setState({ newOrdersCount: response.content.length });
+          var count = this.state.newOrdersCount - this.state.rows.length;
+          if (count > 0) {
+            if (count > 1) {
+              var notificationMessage = "У вас " + count + " новых заказов";
+              this.setState({
+                showUpdateNotification: true,
+                notificationMessage
+              });
+            } else {
+              var notificationMessage = "У вас один новый заказ";
+              this.setState({
+                showUpdateNotification: true,
+                notificationMessage
+              });
+            }
+          } else {
+            if (count < 0) {
+              this.getOrdersList();
+            }
+          }
         })
         .catch(error => {
           var notificationMessage = "Ошибка сервера.";
@@ -228,6 +245,14 @@ class OrdersList extends React.Component {
     this.setState({ showNotification: false });
   };
 
+  handleUpdateNotificationClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    this.getOrdersList();
+    this.setState({ showUpdateNotification: false });
+  };
+
   render() {
     const { classes } = this.props;
     const { activeTab } = this.state;
@@ -243,6 +268,14 @@ class OrdersList extends React.Component {
           message={this.state.notificationMessage}
           durationTime={5000}
           handleClose={this.handleNotificationClose}
+        />
+        <Notifications
+          open={this.state.showUpdateNotification}
+          variant={"info"}
+          message={this.state.notificationMessage}
+          durationTime={0}
+          handleClose={this.handleUpdateNotificationClose}
+          buttonType={"update"}
         />
         <div className={this.state.loading === true ? classes.loading : null}>
           <AppBar
@@ -339,37 +372,6 @@ class OrdersList extends React.Component {
                   </React.Fragment>
                 }
               />
-              <div className={classes.newOrders}>
-                {" "}
-                {this.state.newOrdersCount - this.state.rows.length > 0 ? (
-                  this.state.newOrdersCount - this.state.rows.length > 1 ? (
-                    <React.Fragment>
-                      <IconButton
-                        color="inherit"
-                        onClick={() => this.getOrdersList()}
-                      >
-                        <RefreshOutlinedIcon />
-                      </IconButton>{" "}
-                      Новых заказов{" "}
-                      <div className={classes.numCircleRed}>
-                        {this.state.newOrdersCount - this.state.rows.length}
-                      </div>
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>
-                      <IconButton
-                        color="inherit"
-                        onClick={() => this.getOrdersList()}
-                      >
-                        <RefreshOutlinedIcon />
-                      </IconButton>{" "}
-                      Новый заказ
-                    </React.Fragment>
-                  )
-                ) : (
-                  ``
-                )}
-              </div>
             </Tabs>
           </AppBar>
           <main className={classes.mainContent}>

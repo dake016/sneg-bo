@@ -5,6 +5,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import InfoIcon from "@material-ui/icons/Info";
 import CloseIcon from "@material-ui/icons/Close";
+import RefreshOutlinedIcon from "@material-ui/icons/RefreshOutlined";
 import green from "@material-ui/core/colors/green";
 import amber from "@material-ui/core/colors/amber";
 import IconButton from "@material-ui/core/IconButton";
@@ -47,7 +48,15 @@ const styles1 = theme => ({
 });
 
 function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
+  const {
+    classes,
+    className,
+    message,
+    onClose,
+    variant,
+    buttonType,
+    ...other
+  } = props;
   const Icon = variantIcon[variant];
 
   return (
@@ -60,17 +69,31 @@ function MySnackbarContent(props) {
           {message}
         </span>
       }
-      action={[
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          className={classes.close}
-          onClick={onClose}
-        >
-          <CloseIcon className={classes.icon} />
-        </IconButton>
-      ]}
+      action={
+        buttonType === "close"
+          ? [
+              <IconButton
+                key="close"
+                aria-label="Close"
+                color="inherit"
+                className={classes.close}
+                onClick={onClose}
+              >
+                <CloseIcon className={classes.icon} />
+              </IconButton>
+            ]
+          : [
+              <IconButton
+                key="update"
+                aria-label="Update"
+                color="inherit"
+                className={classes.close}
+                onClick={onClose}
+              >
+                <RefreshOutlinedIcon className={classes.icon} />
+              </IconButton>
+            ]
+      }
       {...other}
     />
   );
@@ -98,7 +121,10 @@ class CustomizedSnackbars extends React.Component {
   };
 
   render() {
-    const { classes, variant, message, durationTime } = this.props;
+    let { classes, variant, message, durationTime, buttonType } = this.props;
+    if (buttonType === undefined) {
+      buttonType = "close";
+    }
     return (
       <div>
         <Snackbar
@@ -107,7 +133,7 @@ class CustomizedSnackbars extends React.Component {
             horizontal: "center"
           }}
           open={this.props.open}
-          onClose={this.handleClose}
+          onRequestClose={this.handleClose}
           className={classes.snack}
           autoHideDuration={durationTime === 0 ? null : durationTime}
         >
@@ -115,6 +141,7 @@ class CustomizedSnackbars extends React.Component {
             onClose={this.handleClose}
             variant={variant}
             message={message}
+            buttonType={buttonType}
           />
         </Snackbar>
       </div>

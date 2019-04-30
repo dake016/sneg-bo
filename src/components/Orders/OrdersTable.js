@@ -589,23 +589,6 @@ class OrderDetails extends React.Component {
               </div>
             </div>
           </div>
-
-          <div className={classes.groupLabel}>Ваш комментарий к заказу</div>
-          <div className={classes.row}>
-            <div className={classes.textField}>
-              <TextField
-                id="spNote"
-                fullWidth
-                defaultValue={selectedRow.spNote}
-                padding="5px"
-              />
-            </div>
-            <div className={classes.column}>
-              <Button variant="contained" color="primary">
-                Отправить
-              </Button>
-            </div>
-          </div>
         </Paper>
       </Dialog>
     ) : null;

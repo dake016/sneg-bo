@@ -249,6 +249,7 @@ class OrdersList extends React.Component {
     if (reason === "clickaway") {
       return;
     }
+    this.setState({ loading: true });
     this.getOrdersList();
     this.setState({ showUpdateNotification: false });
   };
